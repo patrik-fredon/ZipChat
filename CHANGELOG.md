@@ -1639,3 +1639,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Přidání IP blocking
   - Přidání request validation
   - Přidání response sanitization
+
+## [1.0.0] - 2024-04-14
+
+### Added
+
+- Monorepo struktura projektu
+- Oddělení frontend a backend částí
+- Workspaces pro lepší správu závislostí
+- Vite konfigurace pro frontend
+- TypeScript konfigurace pro obě části
+- Nové konfigurační soubory pro frontend a backend
+- Aktualizované .env.example soubory
+- Aktualizovaný .gitignore pro monorepo
+
+### Changed
+
+- Reorganizace projektu do monorepo struktury
+- Aktualizace package.json souborů
+- Přesun backend kódu do správné struktury
+- Přesun frontend kódu do správné struktury
+- Aktualizace README.md s novou strukturou projektu
+- Aktualizace skriptů pro vývoj a build
+
+### Fixed
+
+- Oprava struktury projektu
+- Oprava konfiguračních souborů
+- Oprava závislostí
+- Oprava skriptů pro vývoj a build

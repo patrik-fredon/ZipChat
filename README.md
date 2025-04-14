@@ -78,6 +78,7 @@ Secure messaging application with end-to-end encryption.
 ## Tech Stack
 
 ### Backend
+
 - Node.js with TypeScript
 - Express.js
 - WebSocket
@@ -89,6 +90,7 @@ Secure messaging application with end-to-end encryption.
 - Winston for logging
 
 ### Frontend
+
 - React with TypeScript
 - Tailwind CSS
 - WebSocket client
@@ -98,97 +100,101 @@ Secure messaging application with end-to-end encryption.
 - React Testing Library
 - Vitest
 
+## Project Structure
+
+```
+zipchat/
+├── backend/           # Backend application
+│   ├── src/          # Source code
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── middleware/
+│   │   ├── utils/
+│   │   └── config/
+│   ├── tests/        # Backend tests
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend/         # Frontend application
+│   ├── src/         # Source code
+│   ├── public/      # Static files
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+├── package.json      # Root package.json (monorepo)
+└── README.md
+```
+
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- MongoDB
-- PostgreSQL
-- Firebase project (for push notifications)
+- npm (v9 or higher)
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/zipchat.git
 cd zipchat
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
-3. Create environment files:
-```bash
-cp .env.example .env
-```
+### Development
 
-4. Update environment variables in `.env`:
-- Set up database connections
-- Configure JWT secret
-- Set up Firebase credentials
-- Configure email settings
-- Set up other required variables
+Start both frontend and backend in development mode:
 
-5. Initialize Firebase:
-- Create a Firebase project
-- Download service account key
-- Set up FCM (Firebase Cloud Messaging)
-- Configure VAPID keys for web push notifications
-
-6. Start the development server:
 ```bash
 npm run dev
 ```
 
-## Testing
+Frontend will be available at http://localhost:3000
+Backend will be available at http://localhost:8000
 
-Run tests:
-```bash
-npm test
-```
+### Building for Production
 
-## Deployment
+Build both frontend and backend:
 
-1. Build the application:
 ```bash
 npm run build
 ```
 
-2. Start the production server:
+### Testing
+
+Run tests for both frontend and backend:
+
 ```bash
-npm start
+npm run test
 ```
 
-## Security Considerations
+### Linting
 
-- All messages are encrypted end-to-end
-- Secure password storage with bcrypt
-- JWT token expiration
-- Rate limiting for API endpoints
-- Input validation with Zod
-- Secure file upload handling
-- XSS protection
-- Proper error handling
-- Secure logging
-- Regular security audits
+Run linting for both frontend and backend:
+
+```bash
+npm run lint
+```
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
 - Firebase for push notification infrastructure
 - MongoDB and PostgreSQL communities
-- Open source contributors 
+- Open source contributors
