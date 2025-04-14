@@ -879,6 +879,126 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Podpora různých prostředí (development/production)
   - Strukturované logování
   - Snadná rozšiřitelnost
+- Monitoring system implementation:
+  - MonitoringService for centralized monitoring
+  - MetricsCollector for collecting system, application and business metrics
+  - Metric types and interfaces
+  - Metric exporters:
+    - PrometheusExporter for Prometheus integration
+    - JSONExporter for JSON file output
+  - PerformanceMonitor for application performance monitoring
+  - SecurityMonitor for security monitoring
+  - Comprehensive logging
+  - Error handling
+  - Type safety
+  - Security measures
+- Test implementation:
+  - MonitoringService tests:
+    - Instance management tests
+    - Initialization tests
+    - Metrics collection tests
+    - Performance monitoring tests
+    - Security monitoring tests
+    - Shutdown tests
+  - MetricsCollector tests:
+    - Initialization tests
+    - Metrics collection tests
+    - System metrics tests
+    - Application metrics tests
+    - Business metrics tests
+    - Export tests
+    - Shutdown tests
+  - PerformanceMonitor tests:
+    - Initialization tests
+    - Metrics initialization tests
+    - Performance monitoring tests
+    - System metrics tests
+    - Application metrics tests
+    - Export tests
+    - Shutdown tests
+  - SecurityMonitor tests:
+    - Initialization tests
+    - Metrics initialization tests
+    - Security monitoring tests
+    - Security metrics tests
+    - Export tests
+    - Shutdown tests
+  - MetricExporter tests:
+    - Initialization tests
+    - Export tests
+    - Metrics grouping tests
+    - Shutdown tests
+  - PrometheusExporter tests:
+    - Initialization tests
+    - Export tests
+    - Format conversion tests
+    - Name sanitization tests
+    - Label formatting tests
+    - Shutdown tests
+  - JSONExporter tests:
+    - Initialization tests
+    - Export tests
+    - File handling tests
+    - Shutdown tests
+  - Type tests
+- Implementace monitorovacího systému
+  - MonitoringService pro centrální správu monitoringu
+  - MetricsCollector pro sběr metrik
+  - PerformanceMonitor pro sledování výkonu
+  - SecurityMonitor pro sledování bezpečnosti
+  - MetricExporter pro export metrik
+  - PrometheusExporter pro export do Prometheus
+  - JSONExporter pro export do JSON
+  - Typy metrik a jejich validace
+- Testy pro monitorovací systém
+  - Testy pro MonitoringService
+  - Testy pro MetricsCollector
+  - Testy pro PerformanceMonitor
+  - Testy pro SecurityMonitor
+  - Testy pro MetricExporter
+  - Testy pro PrometheusExporter
+  - Testy pro JSONExporter
+  - Testy pro typy metrik
+- Implementace metod pro sledování autentizace v SecurityMonitor
+- Implementace metod pro sledování autorizace v SecurityMonitor
+- Implementace metod pro sledování bezpečnostních incidentů v SecurityMonitor
+- Implementace metod pro sledování API bezpečnosti v SecurityMonitor
+- Přidání metody getCurrentMetrics pro získání aktuálních metrik
+- Testy pro metody sledování autentizace
+- Testy pro metody sledování autorizace
+- Testy pro metody sledování bezpečnostních incidentů
+- Testy pro metody sledování API bezpečnosti
+- Testy pro metodu getCurrentMetrics
+- Integrace bezpečnostních metrik do MonitoringService
+- Přidání metod pro přímý přístup k bezpečnostním metrikám
+- Přidání metod pro sledování bezpečnostních událostí
+- Testy pro metody sledování autentizace v MonitoringService
+- Testy pro metody sledování autorizace v MonitoringService
+- Testy pro metody sledování bezpečnostních incidentů v MonitoringService
+- Testy pro metody sledování API bezpečnosti v MonitoringService
+- Testy pro metodu getSecurityMetrics v MonitoringService
+- Integrace monitorovacího systému s autentizačním systémem
+- Sledování autentizačních událostí v AuthenticationService
+- Sledování bezpečnostních incidentů v AuthenticationService
+- Sledování pokusů o reset hesla
+- Sledování změn hesla
+- Sledování neúspěšných přihlášení
+- Implementace metod pro sledování autentizace, autorizace, bezpečnostních incidentů a API bezpečnosti v SecurityMonitor
+- Přidání metody pro získání aktuálních metrik
+- Testy pro nové metody v SecurityMonitor
+- Integrace bezpečnostních metrik do MonitoringService
+- Sledování autentizačních událostí v AuthenticationService
+- Sledování bezpečnostních incidentů v AuthenticationService
+- Sledování pokusů o reset hesla v AuthenticationService
+- Sledování změn hesla v AuthenticationService
+- Sledování neúspěšných pokusů o přihlášení v AuthenticationService
+- Komplexní testy pro AuthenticationService včetně sledování metrik
+- Testy pro úspěšné a neúspěšné registrace
+- Testy pro úspěšná a neúspěšná přihlášení
+- Testy pro ověření tokenu a bezpečnostní incidenty
+- Testy pro změnu hesla
+- Testy pro reset hesla
+- Testy pro sledování metrik v reálném čase
 
 ### Changed
 
@@ -1212,6 +1332,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Strukturované logování
   - Podpora prostředí
   - Rozšiřitelnost
+- Vylepšení logování
+  - Přidání strukturovaného logování
+  - Přidání kontextu do logů
+  - Vylepšení formátování logů
+- Vylepšení error handlingu
+  - Přidání custom error tříd
+  - Vylepšení error messages
+  - Přidání stack trace
+- Vylepšení testů
+  - Přidání testů pro všechny komponenty
+  - Vylepšení test coverage
+  - Přidání mocků a stubů
 
 ### Deprecated
 
@@ -1496,3 +1628,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bezpečnost dat
   - Ochrana informací
   - Bezpečné ukládání
+- Přidání bezpečnostních metrik
+  - Sledování failed login attempts
+  - Sledování suspicious activities
+  - Sledování security violations
+  - Sledování access denied
+  - Sledování API errors
+- Vylepšení bezpečnosti
+  - Přidání rate limiting
+  - Přidání IP blocking
+  - Přidání request validation
+  - Přidání response sanitization
