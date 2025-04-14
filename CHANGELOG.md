@@ -1652,6 +1652,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Nové konfigurační soubory pro frontend a backend
 - Aktualizované .env.example soubory
 - Aktualizovaný .gitignore pro monorepo
+- Základní struktura frontend aplikace:
+  - Hlavní vstupní bod (main.tsx)
+  - Základní komponenty (Layout, Navbar)
+  - Směrování aplikace (App.tsx)
+  - Základní stránky (Home, Chat, Profile, NotFound)
+- Základní struktura backend aplikace:
+  - Konfigurace TypeScript
+  - Základní závislosti
+  - Skripty pro vývoj a build
 
 ### Changed
 
@@ -1661,6 +1670,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Přesun frontend kódu do správné struktury
 - Aktualizace README.md s novou strukturou projektu
 - Aktualizace skriptů pro vývoj a build
+- Vylepšení struktury adresářů pro lepší organizaci kódu
 
 ### Fixed
 
@@ -1668,3 +1678,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Oprava konfiguračních souborů
 - Oprava závislostí
 - Oprava skriptů pro vývoj a build
+- Oprava importů a cest v souborech
