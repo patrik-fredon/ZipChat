@@ -1,0 +1,293 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Initial project setup
+- Basic project structure
+- Documentation structure
+- User model implementation
+- Key model implementation
+- Database layer documentation
+- Security documentation
+- Monitoring documentation
+- Infrastructure documentation
+- Backend documentation
+- Frontend documentation
+- Architecture documentation
+- CHANGELOG.md for tracking changes
+- Updated backend documentation with latest structure
+- Encryption service implementation with:
+  - Message encryption using AES-256-GCM
+  - Message decryption with authentication
+  - Key rotation functionality
+  - Input validation using Zod
+- Message controller implementation with:
+  - Message encryption endpoint
+  - Message decryption endpoint
+  - Key rotation endpoint
+  - New message endpoints:
+    - Send message with attachments
+    - Typing indicator
+    - Message drafts
+- Message routes implementation with:
+  - Authentication middleware
+  - RESTful endpoints for message operations
+  - File upload middleware
+- Message model implementation with:
+  - Secure message storage
+  - Message expiration
+  - Read status tracking
+  - Pagination support
+  - Message retrieval methods
+  - Mongoose schema with proper indexing
+  - Message status tracking (sent, delivered, read)
+  - Efficient conversation queries
+  - Attachment support
+  - Draft storage
+- Message service implementation with:
+  - Secure message sending
+  - Message retrieval with decryption
+  - Read status management
+  - Real-time notifications
+  - User verification
+  - Attachment handling
+  - Draft management
+- WebSocket service implementation with:
+  - Secure WebSocket connections
+  - JWT authentication
+  - Real-time message delivery
+  - Message status updates
+  - User online status
+  - Connection health monitoring
+  - Automatic reconnection
+  - Typing indicator notifications
+- Frontend message components:
+  - MessageList component for displaying messages
+  - MessageItem component for individual messages
+  - MessageComposer component for sending messages
+  - Czech localization for dates and messages
+  - Real-time message updates
+  - Message expiration handling
+  - Read status tracking
+  - Chat window component with:
+    - Real-time message delivery
+    - Message status indicators
+    - User online status
+    - Infinite scroll for message history
+    - Error handling and loading states
+  - Message grouping by time and sender
+  - Message status indicators (sent, delivered, read)
+  - Responsive design with Tailwind CSS
+  - Accessibility improvements
+- Database integration:
+  - PostgreSQL connection setup
+  - Message storage implementation
+  - Key storage implementation
+  - User storage implementation
+  - MongoDB integration for messages
+  - Efficient indexes for queries
+  - Attachment storage
+  - Draft storage
+- Automated cleanup:
+  - Cron job for expired messages
+  - Hourly cleanup schedule
+  - Logging of cleanup operations
+  - Attachment cleanup
+- Real-time communication:
+  - WebSocket service implementation
+  - Real-time message updates
+  - Automatic reconnection
+  - Message handler management
+  - Ping/pong health checks
+  - Client connection management
+  - Typing indicator notifications
+- Frontend chat components implementation:
+  - ChatWindow component with:
+    - Real-time message updates
+    - User status indicators
+    - Message history with infinite scroll
+    - Error handling and loading states
+    - Responsive design
+  - MessageList component with:
+    - Message grouping by time and sender
+    - Efficient message rendering
+    - Empty state handling
+    - Scroll management
+  - Message component with:
+    - Status indicators (sent, delivered, read)
+    - Timestamp display
+    - Message bubble styling
+    - Accessibility improvements
+  - Czech localization for all UI elements
+  - Tailwind CSS styling for consistent design
+  - MessageComposer component with:
+    - Auto-resizing textarea
+    - Typing indicators
+    - Message validation
+    - Keyboard shortcuts
+    - Emoji support
+    - File attachment preview
+    - Message draft saving
+    - Accessibility improvements
+  - Common components:
+    - EmojiPicker for emoji selection
+    - FilePreview for attachment preview
+  - Custom hooks:
+    - useLocalStorage for draft saving
+    - useTypingIndicator for typing status
+  - Utils:
+    - Emoji list for picker
+    - File type icons
+    - File size formatting
+- Backend services:
+  - MessageService with:
+    - Secure message sending
+    - Message retrieval with decryption
+    - Read status management
+    - Real-time notifications
+    - User verification
+    - Attachment handling
+    - Draft management
+  - WebSocketService with:
+    - Secure WebSocket connections
+    - JWT authentication
+    - Real-time message delivery
+    - Message status updates
+    - User online status
+    - Connection health monitoring
+    - Automatic reconnection
+    - Typing indicator notifications
+  - File upload middleware with:
+    - Secure file storage
+    - File type validation
+    - File size limits
+    - Unique filename generation
+
+### Changed
+
+- Refactored backend documentation to be more comprehensive
+- Updated project structure documentation
+- Improved code organization in backend
+- Enhanced security measures in encryption service
+- Improved error handling in controllers
+- Optimized message storage structure
+- Enhanced user experience with loading states
+- Improved error handling in frontend components
+- Migrated message storage to MongoDB for better scalability
+- Enhanced WebSocket implementation with proper connection management
+- Optimized database queries:
+  - Added prepared statements
+  - Improved query performance
+  - Added proper indexing
+  - Implemented efficient message retrieval
+- Enhanced security:
+  - Implemented proper password hashing
+  - Added input validation
+  - Improved error handling
+  - Added WebSocket authentication
+  - Added file upload validation
+  - Enhanced attachment security
+- Improved frontend components:
+  - Added real-time updates
+  - Enhanced error handling
+  - Improved loading states
+  - Added automatic reconnection
+  - Added message delivery status
+  - Enhanced message grouping
+  - Improved accessibility
+  - Optimized performance
+- Enhanced frontend components:
+  - Improved message grouping logic
+  - Optimized rendering performance
+  - Enhanced accessibility features
+  - Improved error handling and user feedback
+  - Added loading states and transitions
+  - Enhanced responsive design
+  - Improved message composer UX:
+    - Better textarea resizing
+    - Smoother animations
+    - Enhanced keyboard navigation
+    - Improved mobile experience
+  - Enhanced file handling:
+    - Better file preview
+    - Improved file type detection
+    - Enhanced file size formatting
+  - Improved emoji picker:
+    - Better emoji organization
+    - Enhanced search functionality
+    - Improved accessibility
+  - Enhanced typing indicators:
+    - Better timing
+    - Improved status updates
+    - Enhanced real-time feedback
+- Enhanced backend services:
+  - Improved message handling
+  - Enhanced WebSocket communication
+  - Better error handling
+  - Improved security measures
+  - Enhanced file upload handling
+  - Better draft management
+  - Improved typing indicator handling
+
+### Deprecated
+
+- N/A
+
+### Removed
+
+- PostgreSQL message storage in favor of MongoDB
+
+### Fixed
+
+- N/A
+
+### Security
+
+- Implemented secure key rotation
+- Added message authentication
+- Enhanced input validation
+- Added authentication middleware for message routes
+- Added message expiration
+- Implemented secure message storage
+- Added client-side validation for message content
+- Implemented secure message decryption flow
+- Added password hashing with bcrypt
+- Implemented secure key storage
+- Added rate limiting for API endpoints
+- Enhanced database security with prepared statements
+- Added automated cleanup of sensitive data
+- Added WebSocket authentication with JWT
+- Implemented secure WebSocket communication
+- Added connection health monitoring
+- Implemented proper WebSocket connection cleanup
+- Enhanced frontend security:
+  - Added input sanitization
+  - Improved error message handling
+  - Enhanced WebSocket connection security
+  - Added proper error boundaries
+  - Implemented secure file upload handling
+  - Added message content validation
+  - Enhanced XSS protection
+  - Added file type validation
+  - Implemented secure file preview
+  - Added emoji sanitization
+  - Enhanced local storage security
+  - Added typing indicator rate limiting
+  - Added file size limits
+  - Implemented secure file storage
+  - Added file type restrictions
+  - Enhanced attachment security
+- Enhanced backend security:
+  - Improved JWT validation
+  - Enhanced WebSocket authentication
+  - Better file upload security
+  - Improved message encryption
+  - Enhanced draft security
+  - Better typing indicator security
