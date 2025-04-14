@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-backup-verify
+  labels:
+    app: backup-verify
+spec:
+  schedule: '0 1 * * *' # Každý den v 1:00
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: verify
+              image: postgres:14-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  apk add --no-cache aws-cli
+                  chmod +x /scripts/verify-backup.sh
+                  /scripts/verify-backup.sh
+              env:
+                - name: POSTGRES_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: host
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: user
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: password
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-credentials
+                      key: database
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: secret-key
+                - name: AWS_DEFAULT_REGION
+                  value: eu-central-1
+                - name: S3_BUCKET
+                  value: zipchat-backups
+              volumeMounts:
+                - name: backup-volume
+                  mountPath: /backup
+                - name: verify-volume
+                  mountPath: /verify
+                - name: scripts-volume
+                  mountPath: /scripts
+          volumes:
+            - name: backup-volume
+              emptyDir: {}
+            - name: verify-volume
+              emptyDir: {}
+            - name: scripts-volume
+              configMap:
+                name: backup-scripts
+          restartPolicy: OnFailure
