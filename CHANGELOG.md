@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - User verification
   - Attachment handling
   - Draft management
-- WebSocket service implementation with:
+- WebSocketService implementation with:
   - Secure WebSocket connections
   - JWT authentication
   - Real-time message delivery
@@ -68,6 +68,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Connection health monitoring
   - Automatic reconnection
   - Typing indicator notifications
+  - Client connection management
+  - Ping/pong health checks
+  - Error handling
+  - Secure logging
+  - Broadcast functionality
+  - User connection status tracking
 - Frontend message components:
   - MessageList component for displaying messages
   - MessageItem component for individual messages
@@ -201,6 +207,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Connection health monitoring
     - Automatic reconnection
     - Typing indicator notifications
+    - Client connection management
+    - Ping/pong health checks
+    - Error handling
+    - Secure logging
+    - Broadcast functionality
+    - User connection status tracking
   - File upload middleware with:
     - Secure file storage
     - File type validation
@@ -302,6 +314,418 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Read status tracking
   - Timestamp tracking
   - Custom data support
+- Notification routes implementation with:
+  - Authentication middleware
+  - RESTful endpoints for notification operations
+  - Real-time WebSocket notifications
+  - Input validation
+  - Error handling
+  - Secure logging
+- Notification testy:
+  - NotificationService testy:
+    - Testování vytváření notifikací
+    - Testování získávání notifikací
+    - Testování označení jako přečtené
+    - Testování mazání notifikací
+    - Testování počtu nepřečtených
+    - Testování čištění expirovaných
+  - NotificationController testy:
+    - Testování endpointů
+    - Testování validace vstupů
+    - Testování chybových stavů
+    - Testování WebSocket notifikací
+- Frontend notifikační komponenty:
+  - NotificationList komponenta:
+    - Zobrazení seznamu notifikací
+    - Infinite scroll pro načítání
+    - Real-time aktualizace přes WebSocket
+    - Označování jako přečtené
+    - Mazání notifikací
+    - Loading stavy
+    - Error handling
+  - NotificationItem komponenta:
+    - Zobrazení jednotlivé notifikace
+    - Typové ikony (message, friend request, system, security)
+    - Časové razítko
+    - Stav přečtení
+    - Akce (označit jako přečtené, smazat)
+    - Responsive design
+    - Accessibility improvements
+  - Notification typy:
+    - Type-safe rozhraní pro notifikace
+    - Response typy pro API
+    - Custom data support
+- Frontend testy pro notifikační komponenty:
+  - NotificationList testy:
+    - Testování vykreslení notifikací
+    - Testování prázdného stavu
+    - Testování chybového stavu
+    - Testování WebSocket aktualizací
+    - Testování infinite scroll
+    - Testování načítání
+  - NotificationItem testy:
+    - Testování vykreslení obsahu
+    - Testování akcí (označit jako přečtené, smazat)
+    - Testování stylů pro přečtené/nepřečtené
+    - Testování ikon pro různé typy notifikací
+    - Testování časových razítek
+    - Testování přístupnosti
+- Notification preferences system with:
+  - User notification settings management
+  - Email notification preferences
+  - Push notification preferences
+  - In-app notification preferences
+  - Notification type preferences
+  - Quiet hours functionality
+  - Default preferences creation
+  - Preference validation
+- Enhanced notification service with:
+  - Preference-based notification filtering
+  - Quiet hours support
+  - Improved notification delivery logic
+  - Better error handling
+  - Enhanced logging
+- Notification preferences model with:
+  - MongoDB schema
+  - Index optimization
+  - Timestamp tracking
+  - Data validation
+- Notification preferences service with:
+  - Preference management
+  - Default preferences creation
+  - Preference validation
+  - Quiet hours checking
+  - Error handling
+  - Logging
+- Notification preferences controller with:
+  - RESTful endpoints for preferences
+  - Input validation
+  - Error handling
+  - Secure logging
+- Notification preferences routes with:
+  - Authentication middleware
+  - RESTful endpoints
+  - Input validation
+  - Error handling
+- Notification preferences tests with:
+  - Preference retrieval tests
+  - Default preference creation tests
+  - Preference update tests
+  - Notification allowance tests
+  - Quiet hours tests
+  - Error handling tests
+- Enhanced notification service tests with:
+  - Preference-based notification tests
+  - Invalid data handling tests
+  - WebSocket notification tests
+  - Error handling tests
+- Frontend notification preferences component with:
+  - User interface for managing preferences
+  - Real-time preference updates
+  - Loading and error states
+  - Responsive design
+  - Accessibility improvements
+  - Czech localization
+- Frontend notification preferences tests with:
+  - Component rendering tests
+  - User interaction tests
+  - Error handling tests
+  - Loading state tests
+  - Accessibility tests
+- WebSocketService tests with:
+  - Connection handling tests
+  - Authentication tests
+  - Message delivery tests
+  - Broadcast tests
+  - Connection status tests
+  - Ping/pong tests
+  - Error handling tests
+  - Client management tests
+- EmailService implementation with:
+  - SMTP configuration
+  - Email sending functionality
+  - Notification emails
+  - Verification emails
+  - Password reset emails
+  - HTML email templates
+  - Error handling
+  - Logging
+- EmailService tests with:
+  - SMTP configuration tests
+  - Email sending tests
+  - Notification email tests
+  - Verification email tests
+  - Password reset email tests
+  - Error handling tests
+- Push notification service with FCM integration:
+  - Firebase Cloud Messaging integration
+  - Push notification sending
+  - Multicast notification support
+  - Platform-specific notification settings
+  - Notification preferences integration
+  - Error handling and logging
+- FCM token management:
+  - Token storage model
+  - Token validation
+  - Token cleanup
+  - Platform support (Android, iOS, Web)
+  - Device identification
+  - Token expiration handling
+- FCM token controller with:
+  - Token registration
+  - Token removal
+  - Token retrieval
+  - Input validation
+  - Error handling
+  - Secure logging
+- FCM token routes with:
+  - Authentication middleware
+  - RESTful endpoints
+  - Input validation
+  - Error handling
+- Push notification tests with:
+  - FCM integration tests
+  - Token management tests
+  - Notification sending tests
+  - Error handling tests
+  - Platform-specific tests
+- Firebase Admin SDK integration
+- VAPID authentication for web push notifications
+- Enhanced notification security with proper key management
+- Frontend push notification components:
+  - PushNotificationSettings component for managing FCM tokens
+  - Device registration functionality
+  - Token management UI
+  - Error handling and loading states
+  - Responsive design with Tailwind CSS
+  - Accessibility improvements
+  - Czech localization
+- Frontend push notification tests:
+  - Component rendering tests
+  - Token registration tests
+  - Token removal tests
+  - Error handling tests
+  - Loading state tests
+  - Accessibility tests
+- Firebase client SDK integration
+- Web push notification support
+- Service worker registration
+- Push notification permission handling
+- Service worker implementation:
+  - Firebase messaging integration
+  - Background message handling
+  - Notification click handling
+  - URL navigation support
+  - Icon and badge support
+  - Data payload handling
+- Enhanced push notification features:
+  - Background message processing
+  - Notification click actions
+  - Custom notification icons
+  - Deep linking support
+  - Multiple window/tab handling
+  - Service worker lifecycle management
+- Push notification hook implementation:
+  - usePushNotifications hook
+  - Permission management
+  - Token registration
+  - Token unregistration
+  - Error handling
+  - Real-time message handling
+  - Browser support detection
+  - Firebase integration
+- Enhanced push notification features:
+  - Permission state management
+  - Token state management
+  - Error state management
+  - Real-time message processing
+  - Browser compatibility checks
+  - Firebase configuration
+  - VAPID key support
+- Push notification hook tests:
+  - Initial state tests
+  - Browser support tests
+  - Permission request tests
+  - Token registration tests
+  - Token unregistration tests
+  - Error handling tests
+  - Real-time message tests
+- Enhanced test coverage:
+  - Mock implementations
+  - Browser API mocks
+  - Firebase mocks
+  - API mocks
+  - Translation mocks
+  - Error scenario tests
+  - Success scenario tests
+- Push notification display component:
+  - PushNotification component
+  - Permission status display
+  - Token status display
+  - Enable/disable controls
+  - Error handling
+  - Loading states
+  - Responsive design
+  - Accessibility improvements
+  - Czech localization
+- Enhanced notification UI:
+  - Status indicators
+  - Action buttons
+  - Error messages
+  - Permission requests
+  - Loading states
+  - Responsive layout
+  - Accessibility features
+  - Localized text
+- Push notification component tests:
+  - Component rendering tests
+  - Permission request tests
+  - Enable/disable tests
+  - Error handling tests
+  - State management tests
+  - UI interaction tests
+  - Accessibility tests
+- Enhanced test coverage:
+  - Mock implementations
+  - Hook mocks
+  - Translation mocks
+  - Error scenario tests
+  - Success scenario tests
+  - UI state tests
+  - Interaction tests
+- Push notification context:
+  - Context provider
+  - Context hook
+  - Type definitions
+  - Error handling
+  - State management
+  - Permission management
+  - Token management
+- Enhanced context features:
+  - Type safety
+  - Error boundaries
+  - State persistence
+  - Permission handling
+  - Token management
+  - Real-time updates
+  - Czech localization
+- Push notification context for React applications
+- Test coverage for push notification context
+- Error handling and logging improvements
+- Type safety enhancements
+- Czech localization support
+- Push notification context for React applications
+- Push notification hook with support for:
+  - Permission management
+  - Token registration
+  - Error handling
+  - Browser compatibility checks
+- Test coverage for push notification functionality
+- Error handling improvements
+- Type safety enhancements
+- Czech localization support
+- Push notification service implementation using Firebase Cloud Messaging
+- FCM token management (save, remove, get tokens)
+- Push notification preferences integration
+- Tests for push notification service and FCM token controller
+- Firebase Admin SDK integration
+- Environment variables for Firebase configuration
+- Frontend push notification hook tests
+- Enhanced notification analytics:
+  - Notification delivery tracking
+  - User engagement metrics
+  - Notification performance monitoring
+  - Real-time analytics dashboard
+  - Custom notification reports
+  - Notification A/B testing support
+- Advanced notification scheduling:
+  - Time-based notification delivery
+  - User timezone support
+  - Smart notification timing
+  - Batch notification processing
+  - Notification priority levels
+  - Rate limiting per user
+- Notification templates:
+  - Customizable notification layouts
+  - Rich media support
+  - Dynamic content variables
+  - Template versioning
+  - Template categories
+  - Template preview functionality
+- Notification preferences UI:
+  - Granular notification settings
+  - Category-based preferences
+  - Channel-specific settings
+  - Preference import/export
+  - Bulk preference management
+  - User preference history
+- Notification testing tools:
+  - Notification simulator
+  - Test environment support
+  - Notification preview
+  - Delivery testing
+  - Performance testing
+  - Error scenario testing
+- Notification analytics implementation:
+  - Analytics model with MongoDB schema
+  - Analytics service with tracking and metrics
+  - Analytics controller with REST endpoints
+  - Analytics routes with authentication
+  - Comprehensive test coverage
+  - Delivery tracking
+  - Engagement tracking
+  - Performance metrics
+  - User analytics
+  - Device information tracking
+  - Analytics cleanup functionality
+- Enhanced notification system:
+  - Real-time analytics dashboard
+  - User engagement metrics
+  - Delivery performance tracking
+  - Device-specific analytics
+  - Notification success rates
+  - User interaction patterns
+  - Performance optimization
+  - Data retention policies
+  - Security enhancements
+  - Error handling improvements
+- Implemented notification analytics system with detailed metrics
+- Added new components for displaying notification analytics:
+  - `NotificationMetrics.tsx` for displaying key metrics and statistics
+  - `NotificationAnalyticsTable.tsx` for detailed analytics data in table format
+- Added support for tracking notification delivery and engagement metrics
+- Implemented date range filtering for analytics data
+- Added pagination support for analytics tables
+- Added performance metrics tracking for notifications
+- Enhanced notification system with analytics tracking
+- Added real-time analytics dashboard
+- Implemented device-specific analytics
+- Added notification success rate tracking
+- Enhanced user interaction pattern analysis
+- Added performance optimization metrics
+- Implemented data retention policies
+- Added security enhancements for analytics data
+- Improved error handling in analytics components
+- Added Czech localization for analytics UI
+- Implemented analytics data export functionality
+- Added analytics data visualization components
+- Enhanced notification delivery tracking
+- Added engagement rate calculation
+- Implemented platform-specific analytics
+- Added notification template analytics
+- Enhanced notification preference analytics
+- Added notification testing analytics
+- Implemented notification tracking system
+- Added analytics data aggregation
+- Enhanced metrics calculation
+- Added reporting functionality
+- Implemented data visualization
+- Enhanced performance tracking
+- Added security monitoring
+- Implemented error tracking
+- Added test coverage tracking
+- Enhanced documentation
+- Added data management tools
 
 ### Changed
 
@@ -395,6 +819,201 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better WebSocket integration
   - Enhanced notification types
   - Improved notification management
+- Improved notification system with:
+  - Better user control over notifications
+  - Enhanced notification filtering
+  - Improved notification delivery
+  - Better error handling
+  - Enhanced logging
+- Enhanced notification preferences with:
+  - Better data validation
+  - Improved error handling
+  - Enhanced logging
+  - Better performance
+- Improved notification service with:
+  - Better preference integration
+  - Enhanced notification filtering
+  - Improved error handling
+  - Better logging
+- Enhanced test coverage with:
+  - More comprehensive test cases
+  - Better test organization
+  - Improved test data
+  - Enhanced test documentation
+- Improved frontend components with:
+  - Better user experience
+  - Enhanced error handling
+  - Improved loading states
+  - Better accessibility
+  - Enhanced performance
+- Enhanced backend routes with:
+  - Better organization
+  - Improved error handling
+  - Enhanced security
+  - Better documentation
+- Enhanced notification system with push support
+- Improved notification service with push capabilities
+- Updated notification tests to include push notifications
+- Enhanced notification security with proper key management
+- Improved error handling in push notification service
+- Enhanced logging for push notifications
+- Updated environment configuration for Firebase
+- Improved notification delivery with platform-specific settings
+- Enhanced notification settings UI
+- Improved error handling in frontend components
+- Updated notification preferences integration
+- Enhanced user experience with loading states
+- Improved accessibility of notification components
+- Updated Czech localization for push notifications
+- Improved notification delivery:
+  - Enhanced background message handling
+  - Better notification presentation
+  - Improved click behavior
+  - Enhanced user experience
+- Updated service worker configuration:
+  - Firebase SDK integration
+  - Environment variable support
+  - Better error handling
+  - Improved logging
+- Improved push notification handling:
+  - Better permission management
+  - Enhanced token management
+  - Improved error handling
+  - Better real-time message processing
+  - Enhanced browser support detection
+  - Improved Firebase integration
+- Updated notification flow:
+  - Better permission request flow
+  - Enhanced token registration flow
+  - Improved error handling flow
+  - Better real-time message flow
+- Improved test structure:
+  - Better test organization
+  - Enhanced mock setup
+  - Improved test isolation
+  - Better error handling
+  - Enhanced test coverage
+- Updated test implementation:
+  - Better async handling
+  - Improved error scenarios
+  - Enhanced success scenarios
+  - Better mock implementations
+  - Improved test readability
+- Improved notification interface:
+  - Better status display
+  - Enhanced controls
+  - Improved error handling
+  - Better loading states
+  - Enhanced responsiveness
+  - Improved accessibility
+  - Better localization
+- Updated notification flow:
+  - Better permission handling
+  - Enhanced token management
+  - Improved error display
+  - Better loading states
+  - Enhanced user feedback
+- Improved test structure:
+  - Better test organization
+  - Enhanced mock setup
+  - Improved test isolation
+  - Better error handling
+  - Enhanced test coverage
+- Updated test implementation:
+  - Better async handling
+  - Improved error scenarios
+  - Enhanced success scenarios
+  - Better mock implementations
+  - Improved test readability
+- Improved context structure:
+  - Better organization
+  - Enhanced type safety
+  - Improved error handling
+  - Better state management
+  - Enhanced permission handling
+  - Improved token management
+  - Better real-time updates
+- Updated context implementation:
+  - Better async handling
+  - Improved error scenarios
+  - Enhanced success scenarios
+  - Better type definitions
+  - Improved context provider
+  - Enhanced context hook
+  - Better error boundaries
+- Improved context structure and organization
+- Enhanced error messages and logging
+- Optimized state management
+- Better test coverage and organization
+- Context structure for better state management
+- Error messages for better user feedback
+- State management for push notifications
+- Test organization and coverage
+- Updated notification system to support both WebSocket and push notifications
+- Enhanced notification preferences to include push notification settings
+- Improved error handling in notification services
+- Updated documentation for push notification setup
+- Enhanced notification delivery:
+  - Improved delivery reliability
+  - Better error recovery
+  - Enhanced retry mechanism
+  - Optimized batch processing
+  - Improved rate limiting
+  - Better resource management
+- Improved notification analytics:
+  - Enhanced data collection
+  - Better performance tracking
+  - Improved error reporting
+  - Enhanced user engagement metrics
+  - Better data visualization
+  - Optimized data storage
+- Enhanced notification templates:
+  - Improved template management
+  - Better variable handling
+  - Enhanced validation
+  - Improved preview functionality
+  - Better version control
+  - Enhanced template organization
+- Improved notification preferences:
+  - Enhanced preference management
+  - Better validation
+  - Improved error handling
+  - Enhanced user experience
+  - Better performance
+  - Improved accessibility
+- Enhanced notification testing:
+  - Improved test coverage
+  - Better test organization
+  - Enhanced test data
+  - Improved test performance
+  - Better error handling
+  - Enhanced test documentation
+- Improved notification tracking:
+  - Enhanced delivery status tracking
+  - Better engagement monitoring
+  - Improved performance metrics
+  - Enhanced data collection
+  - Better error handling
+  - Improved logging
+  - Enhanced security
+  - Better data validation
+  - Improved test coverage
+  - Enhanced documentation
+- Enhanced analytics features:
+  - Improved data aggregation
+  - Enhanced metrics calculation
+  - Better reporting
+  - Improved data visualization
+  - Enhanced performance
+  - Better security
+  - Improved error handling
+  - Enhanced test coverage
+  - Better documentation
+  - Improved data management
+- Updated notification system to include analytics tracking
+- Enhanced notification delivery system with performance monitoring
+- Improved error handling in notification components
+- Updated translations for analytics-related content
 
 ### Deprecated
 
@@ -406,7 +1025,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- N/A
+- Fixed potential memory leaks in notification components
+- Improved error handling in analytics data fetching
+- Fixed date formatting issues in analytics display
+- Fixed data aggregation issues
+- Improved error reporting
+- Fixed performance issues in analytics dashboard
+- Enhanced data validation
+- Improved error handling in analytics components
+- Fixed security vulnerabilities in analytics system
+- Enhanced data protection measures
 
 ### Security
 
@@ -491,3 +1119,137 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved error handling
   - Enhanced logging
   - Added proper data validation
+- Enhanced notification security with:
+  - Better preference validation
+  - Improved error handling
+  - Enhanced logging
+  - Better data protection
+  - Improved access control
+- Enhanced notification security with:
+  - Better preference validation
+  - Improved error handling
+  - Enhanced logging
+  - Better data protection
+  - Improved access control
+- Enhanced test security with:
+  - Better test data isolation
+  - Improved test data protection
+  - Enhanced test environment security
+  - Better test access control
+- Enhanced notification security with:
+  - Better preference validation
+  - Improved error handling
+  - Enhanced logging
+  - Better data protection
+  - Improved access control
+- Enhanced test security with:
+  - Better test data isolation
+  - Improved test data protection
+  - Enhanced test environment security
+  - Better test access control
+- Enhanced frontend security with:
+  - Better input validation
+  - Improved error handling
+  - Enhanced data protection
+  - Better access control
+  - Improved XSS protection
+- Enhanced backend security with:
+  - Better input validation
+  - Improved error handling
+  - Enhanced logging
+  - Better data protection
+  - Improved access control
+  - Enhanced authentication
+  - Better session management
+- Added secure push notification handling
+- Implemented VAPID authentication for push notifications
+- Enhanced notification security with proper key management
+- Added secure token storage and validation
+- Implemented secure token cleanup
+- Enhanced error handling for push notifications
+- Added rate limiting for push notification requests
+- Improved logging for security events
+- Added secure token handling in frontend
+- Implemented proper error handling
+- Enhanced user feedback for security events
+- Added input validation for token operations
+- Improved error messages for security issues
+- Enhanced service worker security:
+  - Secure Firebase initialization
+  - Protected environment variables
+  - Safe URL handling
+  - Secure data processing
+  - Improved error handling
+- Enhanced push notification security:
+  - Protected permission handling
+  - Secure token management
+  - Safe error display
+  - Protected user feedback
+  - Secure state management
+- Enhanced test security:
+  - Protected test data
+  - Secure mock implementations
+  - Safe error handling
+  - Protected API calls
+  - Secure Firebase mocks
+- Enhanced context security:
+  - Protected context data
+  - Secure state management
+  - Safe error handling
+  - Protected API calls
+  - Secure permission handling
+  - Protected token management
+  - Safe real-time updates
+- Added input validation for context values
+- Improved error handling and logging
+- Enhanced type safety
+- Input validation for push notification tokens
+- Enhanced error handling
+- Permission checks
+- Secure token management
+- Enhanced notification security:
+  - Improved data validation
+  - Enhanced access control
+  - Better error handling
+  - Improved logging
+  - Enhanced data protection
+  - Better rate limiting
+- Improved notification analytics security:
+  - Enhanced data protection
+  - Better access control
+  - Improved error handling
+  - Enhanced logging
+  - Better data validation
+  - Improved security monitoring
+- Enhanced notification template security:
+  - Improved template validation
+  - Enhanced access control
+  - Better error handling
+  - Improved logging
+  - Enhanced data protection
+  - Better security monitoring
+- Improved notification preference security:
+  - Enhanced preference validation
+  - Better access control
+  - Improved error handling
+  - Enhanced logging
+  - Better data protection
+  - Improved security monitoring
+- Enhanced notification testing security:
+  - Improved test data protection
+  - Enhanced access control
+  - Better error handling
+  - Improved logging
+  - Enhanced data protection
+  - Better security monitoring
+- Enhanced analytics security:
+  - Improved data validation
+  - Enhanced access control
+  - Better error handling
+  - Improved logging
+  - Enhanced data protection
+  - Better rate limiting
+  - Improved authentication
+  - Enhanced authorization
+  - Better data encryption
+  - Improved security monitoring
