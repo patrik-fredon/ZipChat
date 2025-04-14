@@ -9,6 +9,16 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
+      scrape_timeout: 10s
+
+    rule_files:
+      - /etc/prometheus/rules/*.yml
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
 
     scrape_configs:
       - job_name: 'kubernetes-pods'
@@ -59,3 +69,57 @@ data:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+
+      - job_name: 'zipchat-backend'
+        static_configs:
+          - targets: ['zipchat-backend:80']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+        scrape_timeout: 4s
+
+      - job_name: 'zipchat-frontend'
+        static_configs:
+          - targets: ['zipchat-frontend:80']
+        metrics_path: '/metrics'
+        scrape_interval: 5s
+        scrape_timeout: 4s
+
+  rules.yml: |
+    groups:
+      - name: zipchat
+        rules:
+          - alert: HighCPUUsage
+            expr: sum(rate(process_cpu_seconds_total[5m])) by (instance) > 0.8
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: High CPU usage on {{ $labels.instance }}
+              description: CPU usage is above 80% for 5 minutes
+
+          - alert: HighMemoryUsage
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: High memory usage on {{ $labels.instance }}
+              description: Memory usage is above 80% for 5 minutes
+
+          - alert: HighLatency
+            expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: High latency on {{ $labels.instance }}
+              description: 95th percentile of request latency is above 1s for 5 minutes
+
+          - alert: HighErrorRate
+            expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: High error rate on {{ $labels.instance }}
+              description: Error rate is above 5% for 5 minutes

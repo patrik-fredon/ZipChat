@@ -5,6 +5,8 @@ metadata:
   labels:
     app: zipchat
     component: backend
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -12,6 +14,19 @@ spec:
     name: zipchat-backend
   minReplicas: 3
   maxReplicas: 10
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
   metrics:
     - type: Resource
       resource:
@@ -25,6 +40,17 @@ spec:
         target:
           type: Utilization
           averageUtilization: 80
+    - type: External
+      external:
+        metric:
+          name: http_requests_total
+          selector:
+            matchLabels:
+              app: zipchat
+              component: backend
+        target:
+          type: AverageValue
+          averageValue: 1000
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
@@ -33,6 +59,8 @@ metadata:
   labels:
     app: zipchat
     component: frontend
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -40,6 +68,19 @@ spec:
     name: zipchat-frontend
   minReplicas: 3
   maxReplicas: 10
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
   metrics:
     - type: Resource
       resource:
@@ -53,3 +94,14 @@ spec:
         target:
           type: Utilization
           averageUtilization: 80
+    - type: External
+      external:
+        metric:
+          name: http_requests_total
+          selector:
+            matchLabels:
+              app: zipchat
+              component: frontend
+        target:
+          type: AverageValue
+          averageValue: 2000

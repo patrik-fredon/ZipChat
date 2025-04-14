@@ -13,7 +13,24 @@ on:
       - 'frontend/Dockerfile'
 
 jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run npm audit
+        working-directory: ./frontend
+        run: npm audit
+
+      - name: Run dependency vulnerability scan
+        uses: snyk/actions/node@master
+        with:
+          args: --file=frontend/package.json
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   test:
+    needs: security
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,6 +50,7 @@ jobs:
         run: |
           npm run test
           npm run test:coverage
+          npm run lint
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -61,9 +79,18 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:buildcache,mode=max
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:${{ github.sha }}
+          cache-from: |
+            type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:buildcache
+            type=gha
+          cache-to: |
+            type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/zipchat-frontend:buildcache,mode=max
+            type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
   deploy:
     needs: build-and-push
@@ -81,5 +108,14 @@ jobs:
         run: |
           kubectl apply -f k8s/frontend-deployment.yaml
           kubectl apply -f k8s/hpa.yaml
+          kubectl apply -f k8s/network-policies.yaml
+          kubectl apply -f k8s/resource-quotas.yaml
+        env:
+          KUBECONFIG: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/zipchat-frontend
+          kubectl get pods -l app=zipchat-frontend
         env:
           KUBECONFIG: ${{ secrets.KUBE_CONFIG }}

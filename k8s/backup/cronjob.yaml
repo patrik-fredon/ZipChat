@@ -20,9 +20,34 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  PGPASSWORD=$POSTGRES_PASSWORD pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -F c -f /backup/backup_$(date +%Y%m%d_%H%M%S).dump
-                  aws s3 cp /backup/*.dump s3://$S3_BUCKET/backups/ --recursive
-                  rm -f /backup/*.dump
+                  # Vytvoření zálohy
+                  BACKUP_FILE="/backup/backup_$(date +%Y%m%d_%H%M%S).dump"
+                  PGPASSWORD=$POSTGRES_PASSWORD pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER -d $POSTGRES_DB -F c -f $BACKUP_FILE
+
+                  # Verifikace zálohy
+                  if ! PGPASSWORD=$POSTGRES_PASSWORD pg_restore -l $BACKUP_FILE > /dev/null; then
+                    echo "Backup verification failed"
+                    exit 1
+                  fi
+
+                  # Nahrání do S3
+                  aws s3 cp $BACKUP_FILE s3://$S3_BUCKET/backups/
+
+                  # Smazání starých záloh (30 dní)
+                  aws s3 ls s3://$S3_BUCKET/backups/ | awk '{print $4}' | while read -r file; do
+                    if [[ $(date -d "$(aws s3 ls s3://$S3_BUCKET/backups/$file | awk '{print $1" "$2}')" +%s) -lt $(date -d "30 days ago" +%s) ]]; then
+                      aws s3 rm s3://$S3_BUCKET/backups/$file
+                    fi
+                  done
+
+                  # Smazání lokální zálohy
+                  rm -f $BACKUP_FILE
+
+                  # Odeslání notifikace
+                  aws sns publish \
+                    --topic-arn $SNS_TOPIC_ARN \
+                    --subject "Database backup completed" \
+                    --message "Backup of $POSTGRES_DB completed successfully at $(date)"
               env:
                 - name: POSTGRES_HOST
                   valueFrom:
@@ -58,6 +83,11 @@ spec:
                   value: eu-central-1
                 - name: S3_BUCKET
                   value: zipchat-backups
+                - name: SNS_TOPIC_ARN
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: sns-topic-arn
               volumeMounts:
                 - name: backup-volume
                   mountPath: /backup
@@ -65,3 +95,4 @@ spec:
             - name: backup-volume
               emptyDir: {}
           restartPolicy: OnFailure
+          backoffLimit: 3

@@ -5,8 +5,16 @@ metadata:
   labels:
     app: zipchat
     component: backend
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5000'
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: zipchat
@@ -16,6 +24,9 @@ spec:
       labels:
         app: zipchat
         component: backend
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '5000'
     spec:
       containers:
         - name: backend
@@ -23,6 +34,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
+              name: http
           resources:
             requests:
               cpu: '100m'
@@ -33,24 +45,56 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 5000
+              port: http
+              scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
-              port: 5000
+              port: http
+              scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 30
           env:
             - name: PYTHONUNBUFFERED
               value: '1'
             - name: FLASK_ENV
               value: 'production'
+            - name: PROMETHEUS_MULTIPROC_DIR
+              value: '/tmp/prometheus'
+          volumeMounts:
+            - name: prometheus-multiproc
+              mountPath: /tmp/prometheus
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
             runAsGroup: 1000
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: prometheus-multiproc
+          emptyDir: {}
+      securityContext:
+        fsGroup: 1000
 ---
 apiVersion: v1
 kind: Service
@@ -65,5 +109,50 @@ spec:
     component: backend
   ports:
     - port: 80
-      targetPort: 5000
+      targetPort: http
+      protocol: TCP
+      name: http
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zipchat-backend-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: zipchat
+      component: backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: zipchat
+              component: frontend
+      ports:
+        - port: http
+          protocol: TCP
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: zipchat
+              component: database
+      ports:
+        - port: 5432
+          protocol: TCP
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: zipchat-backend-quota
+spec:
+  hard:
+    requests.cpu: '2'
+    requests.memory: 2Gi
+    limits.cpu: '4'
+    limits.memory: 4Gi
+    pods: '10'

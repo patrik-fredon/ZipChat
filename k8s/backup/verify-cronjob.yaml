@@ -20,9 +20,29 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  apk add --no-cache aws-cli
+                  # Instalace potřebných nástrojů
+                  apk add --no-cache aws-cli curl jq
+
+                  # Vytvoření logovacího adresáře
+                  mkdir -p /var/log
+
+                  # Spuštění verifikačního skriptu
                   chmod +x /scripts/verify-backup.sh
                   /scripts/verify-backup.sh
+
+                  # Odeslání metrik do Prometheus
+                  if [ -f /var/log/backup-verify.log ]; then
+                    VERIFICATION_STATUS=$(tail -n 1 /var/log/backup-verify.log | grep -o "Backup verification .*")
+                    if [[ $VERIFICATION_STATUS == *"successful"* ]]; then
+                      curl -X POST -H "Content-Type: application/json" \
+                        -d '{"status": "success", "timestamp": "'$(date +%s)'"}' \
+                        http://prometheus-pushgateway:9091/metrics/job/backup_verify
+                    else
+                      curl -X POST -H "Content-Type: application/json" \
+                        -d '{"status": "failure", "timestamp": "'$(date +%s)'"}' \
+                        http://prometheus-pushgateway:9091/metrics/job/backup_verify
+                    fi
+                  fi
               env:
                 - name: POSTGRES_HOST
                   valueFrom:
@@ -58,6 +78,11 @@ spec:
                   value: eu-central-1
                 - name: S3_BUCKET
                   value: zipchat-backups
+                - name: SNS_TOPIC_ARN
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: sns-topic-arn
               volumeMounts:
                 - name: backup-volume
                   mountPath: /backup
@@ -65,6 +90,8 @@ spec:
                   mountPath: /verify
                 - name: scripts-volume
                   mountPath: /scripts
+                - name: log-volume
+                  mountPath: /var/log
           volumes:
             - name: backup-volume
               emptyDir: {}
@@ -73,4 +100,7 @@ spec:
             - name: scripts-volume
               configMap:
                 name: backup-scripts
+            - name: log-volume
+              emptyDir: {}
           restartPolicy: OnFailure
+          backoffLimit: 3
