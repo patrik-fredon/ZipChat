@@ -9,31 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Vytvořena dokumentace pro refaktorizaci:
-  - `docs/optimization/DEPLOYMENT.md` - Plán nasazení
-  - `docs/optimization/SCALING.md` - Plán škálování
-  - `docs/optimization/DISASTER_RECOVERY.md` - Plán zotavení po havárii
-- Implementována nová architektura nasazení:
-  - CI/CD pipeline konfigurace
-  - Docker konfigurace pro frontend a backend
-  - Kubernetes manifesty pro deployment
-  - Health checks a monitoring
-- Přidána podpora pro horizontální škálování:
-  - HPA konfigurace pro frontend a backend
-  - Resource limits a requests
-  - Load balancing konfigurace
-- Implementována backup strategie:
-  - Automatizované zálohování databáze
-  - Verifikační mechanismy pro zálohy
-  - Recovery postupy
-- Přidán monitoring a alerting:
-  - Health checks pro všechny komponenty
-  - Prometheus alerty pro kritické stavy
-  - Metriky pro sledování výkonu
+- Vylepšena CI/CD pipeline:
+  - Přidány security checks pro backend a frontend
+  - Implementován dependency scanning pomocí Snyk
+  - Vylepšeno cache management pro Docker buildy
+  - Přidána podpora pro multi-arch buildy
+  - Implementována verifikace deploymentu
+- Vylepšeny Kubernetes manifesty:
+  - Přidány network policies pro lepší bezpečnost
+  - Implementovány resource quotas pro kontrolu zdrojů
+  - Vylepšeny health checks a readiness probes
+  - Přidány startup probes pro lepší inicializaci
+  - Implementovány security contexts
+- Vylepšena HPA konfigurace:
+  - Přidány custom metriky pro lepší škálování
+  - Implementovány stabilizační okna
+  - Vylepšeny scale up/down policies
+- Vylepšen monitoring:
+  - Přidány custom metriky pro Prometheus
+  - Implementovány alert rules pro kritické stavy
+  - Vylepšena konfigurace scrape intervalů
+- Vylepšena backup strategie:
+  - Implementována verifikace záloh
+  - Přidána retention policy (30 dní)
+  - Vylepšeno logování a notifikace
+  - Přidána integrita s Prometheus
 
 ### Changed
 
-- Refaktorizována struktura projektu:
+- Refaktorována struktura projektu:
   - Přesun dokumentace do podsložky `docs/optimization`
   - Reorganizace konfiguračních souborů
   - Optimalizace Dockerfile pro lepší výkon
