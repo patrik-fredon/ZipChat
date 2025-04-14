@@ -824,6 +824,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Export testovacích dat
   - Testovací dashboard
   - Integrace s CI/CD
+- Notification testing tools:
+  - NotificationABTestSimulator for A/B test simulation
+  - NotificationTester for comprehensive test suite
+  - Performance testing capabilities
+  - Error handling tests
+  - Basic notification delivery tests
+  - A/B test simulation with metrics tracking
 
 ### Changed
 
@@ -1143,6 +1150,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better testing guide
   - Improved deployment guide
   - Enhanced maintenance guide
+- Enhanced notification testing infrastructure
+- Improved error handling in notification services
+- Optimized performance testing methodology
 
 ### Deprecated
 
