@@ -726,6 +726,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added test coverage tracking
 - Enhanced documentation
 - Added data management tools
+- Notification A/B testing implementation:
+  - A/B test model with MongoDB schema
+  - A/B test service with test management
+  - A/B test controller with REST endpoints
+  - A/B test routes with authentication
+  - Comprehensive test coverage
+  - Test variant management
+  - Test metrics tracking
+  - Test status management
+  - Test cleanup functionality
+- Enhanced A/B testing features:
+  - Multiple variant support
+  - Target percentage distribution
+  - Test scheduling
+  - Test status tracking
+  - Test metrics calculation
+  - Test cleanup
+  - Security enhancements
+  - Error handling improvements
+- Added new components for A/B testing:
+  - `NotificationABTestForm.tsx` for creating and editing tests
+  - `NotificationABTestList.tsx` for displaying active tests
+  - `NotificationABTestMetrics.tsx` for displaying test metrics
+- Added support for test variant management
+- Implemented test scheduling functionality
+- Added test metrics calculation
+- Enhanced test status management
+- Added test cleanup functionality
+- Improved error handling in A/B testing components
+- Added Czech localization for A/B testing UI
+- Implemented test data export functionality
+- Added test data visualization components
+- Enhanced test variant tracking
+- Added test success rate calculation
+- Implemented platform-specific test metrics
+- Added test template support
+- Enhanced test preference management
+- Added test simulation tools
+- Implemented test tracking system
+- Added test data aggregation
+- Enhanced test metrics calculation
+- Added test reporting functionality
+- Implemented test data visualization
+- Enhanced test performance tracking
+- Added test security monitoring
+- Implemented test error tracking
+- Added test coverage tracking
+- Enhanced test documentation
+- Added test data management tools
+- Implementace A/B testování notifikací:
+  - Frontend komponenty pro A/B testování:
+    - `NotificationABTestForm.tsx` pro vytváření a úpravu testů
+    - `NotificationABTestList.tsx` pro zobrazení aktivních testů
+    - `NotificationABTestMetrics.tsx` pro zobrazení metrik testů
+  - Vylepšené UI komponenty:
+    - Formulář pro vytváření testů s validací pomocí Zod
+    - Seznam testů s podrobnými metrikami
+    - Grafické zobrazení metrik pomocí recharts
+    - Česká lokalizace všech komponent
+    - Responzivní design s Tailwind CSS
+  - Vylepšené funkce:
+    - Správa variant notifikací
+    - Sledování metrik v reálném čase
+    - Porovnání výkonu variant
+    - Časové řady pro analýzu trendů
+    - Export dat pro další analýzu
+  - Bezpečnostní vylepšení:
+    - Validace vstupů
+    - Ošetření chybových stavů
+    - Bezpečné ukládání dat
+    - Ochrana proti XSS
+  - Testování:
+    - Kompletní testovací pokrytí komponent
+    - Testy uživatelského rozhraní
+    - Testy validace formulářů
+    - Testy zobrazení metrik
+- Implementace testů pro komponentu NotificationABTestMetrics:
+  - Testy pro zobrazení celkových metrik
+  - Testy pro zobrazení metrik variant
+  - Testy pro porovnávací tabulku variant
+  - Testy pro časové řady
+  - Testy pro formátování dat
+  - Testy pro prázdná data
+  - Vylepšené testovací pokrytí
+  - Lepší organizace testů
+  - Vylepšená dokumentace testů
+  - Konzistence v testovacích datech
+- Implementace testovacího prostředí pro A/B testy:
+  - NotificationABTestSimulator pro simulaci testovacího prostředí
+  - Testovací nástroje pro vývojáře
+  - Simulátor notifikací
+  - Testovací rozhraní pro A/B testy
+  - Automatizované testovací scénáře
+  - Metriky pro testovací prostředí
+  - Logování testovacích výsledků
+  - Export testovacích dat
+  - Testovací dashboard
+  - Integrace s CI/CD
 
 ### Changed
 
@@ -1014,6 +1112,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced notification delivery system with performance monitoring
 - Improved error handling in notification components
 - Updated translations for analytics-related content
+- Enhanced A/B testing features:
+  - Improved test management
+  - Better variant handling
+  - Enhanced metrics calculation
+  - Improved test scheduling
+  - Better test status tracking
+  - Enhanced test cleanup
+  - Improved security
+  - Better error handling
+  - Improved performance
+- Updated A/B testing UI:
+  - Better test creation flow
+  - Enhanced variant management
+  - Improved metrics display
+  - Better test status visualization
+  - Enhanced test scheduling
+  - Improved error handling
+  - Better loading states
+  - Enhanced accessibility
+  - Improved Czech localization
+- Improved A/B testing documentation:
+  - Enhanced API documentation
+  - Better test case documentation
+  - Improved error handling documentation
+  - Enhanced security documentation
+  - Better performance documentation
+  - Improved user guide
+  - Enhanced developer guide
+  - Better testing guide
+  - Improved deployment guide
+  - Enhanced maintenance guide
 
 ### Deprecated
 
@@ -1035,6 +1164,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved error handling in analytics components
 - Fixed security vulnerabilities in analytics system
 - Enhanced data protection measures
+- Fixed A/B testing metrics calculation
+- Improved error handling in A/B testing components
+- Fixed test scheduling issues
+- Fixed variant distribution problems
+- Improved test status tracking
+- Fixed test cleanup functionality
+- Enhanced test data validation
+- Improved test error handling
+- Fixed test security vulnerabilities
+- Enhanced test data protection
 
 ### Security
 
@@ -1244,6 +1383,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better security monitoring
 - Enhanced analytics security:
   - Improved data validation
+  - Enhanced access control
+  - Better error handling
+  - Improved logging
+  - Enhanced data protection
+  - Better rate limiting
+  - Improved authentication
+  - Enhanced authorization
+  - Better data encryption
+  - Improved security monitoring
+- Enhanced A/B testing security:
+  - Improved test data validation
   - Enhanced access control
   - Better error handling
   - Improved logging
