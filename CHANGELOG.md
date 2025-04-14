@@ -86,6 +86,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Message status indicators (sent, delivered, read)
   - Responsive design with Tailwind CSS
   - Accessibility improvements
+  - MessageList component with:
+    - Message grouping by time and sender
+    - Infinite scroll for message history
+    - Automatic message read detection
+    - Loading state handling
+    - Czech date localization
+  - MessageItem component with:
+    - Message status indicators (sent, delivered, read)
+    - Timestamp display in Czech format
+    - Different styling for own/other messages
+    - Responsive design with Tailwind CSS
+  - MessageComposer component with:
+    - Auto-resizing textarea
+    - Typing indicators
+    - Message validation
+    - Keyboard shortcuts
+    - Emoji support
+    - File attachment preview
+    - Message draft saving
+    - Accessibility improvements
+  - EmojiPicker component with:
+    - Emoji search
+    - Grid layout
+    - Keyboard navigation
+    - Accessibility improvements
+  - FilePreview component with:
+    - File type icons
+    - File size formatting
+    - Remove functionality
+    - Responsive design
+  - Custom hooks:
+    - useLocalStorage for draft saving
+    - useTypingIndicator for typing status
+  - Utils:
+    - Emoji list for picker
+    - File type icons
+    - File size formatting
 - Database integration:
   - PostgreSQL connection setup
   - Message storage implementation
@@ -169,6 +206,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - File type validation
     - File size limits
     - Unique filename generation
+- Frontend testy pro komponenty:
+  - MessageComposer testy:
+    - Testování vykreslení komponenty
+    - Testování odeslání zprávy
+    - Testování příloh
+    - Testování emoji
+    - Testování indikátoru psaní
+    - Testování konceptů
+    - Testování chyb
+  - MessageList testy:
+    - Testování vykreslení zpráv
+    - Testování stavu načítání
+    - Testování prázdného stavu
+    - Testování seskupování zpráv podle data
+    - Testování načítání starších zpráv
+    - Testování označení zprávy jako přečtené
+    - Testování výběru zprávy
+    - Testování mazání zprávy
+    - Testování stavových indikátorů
+    - Testování příloh
+  - MessageItem testy:
+    - Testování vykreslení obsahu
+    - Testování časových razítek
+    - Testování stavových indikátorů
+    - Testování stylování
+    - Testování přístupnosti
+  - EmojiPicker testy:
+    - Testování vykreslení emoji
+    - Testování vyhledávání emoji
+    - Testování výběru emoji
+    - Testování prázdného vyhledávání
+    - Testování tooltipů
+  - FileUploader testy:
+    - Testování vykreslení komponenty
+    - Testování výběru souborů
+    - Testování drag & drop
+    - Testování validace typů souborů
+    - Testování validace velikosti souborů
+    - Testování chybových hlášek
+- UserService implementation with:
+  - User profile management
+  - User data validation
+  - Secure password storage
+  - User role management
+  - Two-factor authentication support
+  - Email verification
+  - User activity tracking
+- UserRepository implementation with:
+  - Database operations for users
+  - Prepared statements for security
+  - Efficient querying
+  - Proper error handling
+  - Data mapping
+- User interface and model with:
+  - Type-safe user data structure
+  - Role-based access control
+  - User profile fields
+  - Security-related fields
+  - Activity tracking fields
+- AuthenticationService implementation with:
+  - User registration with password hashing
+  - Secure login with JWT tokens
+  - Token verification
+  - Password change functionality
+  - Password reset functionality
+  - Secure password storage
+  - Role-based access control
+  - Two-factor authentication support
+  - Email verification
+  - User activity tracking
+  - Secure logging
+  - Error handling
+  - Input validation
+- NotificationService implementation with:
+  - Real-time notifications via WebSocket
+  - Notification types (message, friend request, system, security)
+  - Notification management (create, read, delete)
+  - Unread notifications count
+  - Pagination support
+  - Notification grouping
+  - Notification persistence
+  - Error handling
+  - Secure logging
+- NotificationRepository implementation with:
+  - Database operations for notifications
+  - Efficient querying with pagination
+  - Prepared statements for security
+  - Proper error handling
+  - Data mapping
+  - Notification cleanup
+- Notification interface and model with:
+  - Type-safe notification structure
+  - Multiple notification types
+  - Read status tracking
+  - Timestamp tracking
+  - Custom data support
 
 ### Changed
 
@@ -204,12 +337,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved accessibility
   - Optimized performance
 - Enhanced frontend components:
-  - Improved message grouping logic
-  - Optimized rendering performance
-  - Enhanced accessibility features
-  - Improved error handling and user feedback
-  - Added loading states and transitions
-  - Enhanced responsive design
   - Improved message composer UX:
     - Better textarea resizing
     - Smoother animations
@@ -235,6 +362,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced file upload handling
   - Better draft management
   - Improved typing indicator handling
+- Vylepšena testovatelnost frontend komponent
+- Optimalizováno pokrytí testy
+- Vylepšena dokumentace testů
+- Zlepšena organizace testovacích souborů
+- Přidána konzistence v testovacích datech
+- Improved user management:
+  - Enhanced user data validation
+  - Better error handling
+  - Improved security measures
+  - Enhanced role management
+  - Better database operations
+  - Improved logging
+- Enhanced authentication:
+  - Improved password security
+  - Better token management
+  - Enhanced error handling
+  - Improved logging
+  - Better input validation
+  - Enhanced role-based access control
+  - Improved two-factor authentication
+  - Better email verification
+  - Enhanced user activity tracking
+- Enhanced notification system:
+  - Improved real-time delivery
+  - Better notification grouping
+  - Enhanced notification persistence
+  - Improved notification cleanup
+  - Better error handling
+  - Enhanced security measures
+  - Improved logging
+  - Better WebSocket integration
+  - Enhanced notification types
+  - Improved notification management
 
 ### Deprecated
 
@@ -291,3 +451,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved message encryption
   - Enhanced draft security
   - Better typing indicator security
+- Přidána validace vstupů v testech
+- Vylepšena bezpečnost testovacích dat
+- Přidána izolace testovacích případů
+- Vylepšena bezpečnost testovacích souborů
+- Enhanced user security:
+  - Added password validation
+  - Implemented secure password storage
+  - Added email validation
+  - Enhanced role-based access control
+  - Added two-factor authentication support
+  - Improved user data validation
+  - Enhanced database security
+  - Added proper error handling
+  - Implemented secure logging
+- Enhanced authentication security:
+  - Added secure password hashing
+  - Implemented JWT token security
+  - Added token expiration
+  - Enhanced password reset security
+  - Added rate limiting for authentication attempts
+  - Implemented secure session management
+  - Added input sanitization
+  - Enhanced error handling
+  - Improved logging
+  - Added role-based access control
+  - Implemented two-factor authentication
+  - Added email verification
+  - Enhanced user activity tracking
+- Enhanced notification security:
+  - Added notification validation
+  - Implemented secure notification storage
+  - Added notification expiration
+  - Enhanced notification cleanup
+  - Added rate limiting for notifications
+  - Improved notification access control
+  - Enhanced WebSocket security
+  - Added input sanitization
+  - Improved error handling
+  - Enhanced logging
+  - Added proper data validation

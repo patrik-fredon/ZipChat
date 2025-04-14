@@ -1,31 +1,45 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { WebSocketService } from '../services/websocket';
 
-export function useTypingIndicator(recipientId: string) {
+export function useTypingIndicator(senderId: string, recipientId: string) {
 	const [isTyping, setIsTyping] = useState(false);
-	const typingTimeoutRef = useRef<NodeJS.Timeout>();
+	const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout>();
 
-	const handleTyping = useCallback(() => {
-		setIsTyping(true);
-		api.post('/messages/typing', { recipientId });
+	const handleTyping = useCallback(
+		(typing: boolean) => {
+			if (typing) {
+				setIsTyping(true);
+				WebSocketService.notifyTyping(senderId, recipientId, true);
 
-		if (typingTimeoutRef.current) {
-			clearTimeout(typingTimeoutRef.current);
-		}
+				if (typingTimeout) {
+					clearTimeout(typingTimeout);
+				}
 
-		typingTimeoutRef.current = setTimeout(() => {
-			setIsTyping(false);
-			api.post('/messages/typing', { recipientId, isTyping: false });
-		}, 3000);
-	}, [recipientId]);
+				const timeout = setTimeout(() => {
+					setIsTyping(false);
+					WebSocketService.notifyTyping(senderId, recipientId, false);
+				}, 3000);
+
+				setTypingTimeout(timeout);
+			} else {
+				setIsTyping(false);
+				WebSocketService.notifyTyping(senderId, recipientId, false);
+
+				if (typingTimeout) {
+					clearTimeout(typingTimeout);
+				}
+			}
+		},
+		[senderId, recipientId, typingTimeout]
+	);
 
 	useEffect(() => {
 		return () => {
-			if (typingTimeoutRef.current) {
-				clearTimeout(typingTimeoutRef.current);
+			if (typingTimeout) {
+				clearTimeout(typingTimeout);
 			}
 		};
-	}, []);
+	}, [typingTimeout]);
 
 	return { isTyping, handleTyping };
 }

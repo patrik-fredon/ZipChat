@@ -1,124 +1,169 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { MessageComposer } from '../../components/messages/MessageComposer';
-import { api } from '../../services/api';
-
-jest.mock('../../services/api');
-jest.mock('../../hooks/useTypingIndicator');
-jest.mock('../../hooks/useLocalStorage');
 
 describe('MessageComposer', () => {
-  const mockOnMessageSent = jest.fn();
-  const recipientId = 'recipient123';
+  const mockOnSend = vi.fn();
+  const mockOnTyping = vi.fn();
+  const mockRecipientId = 'test-recipient';
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
-  it('should render message composer with all elements', () => {
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+  it('renders correctly', () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     expect(screen.getByPlaceholderText('Napište zprávu...')).toBeInTheDocument();
-    expect(screen.getByLabelText('Přidat emoji')).toBeInTheDocument();
     expect(screen.getByLabelText('Přidat přílohu')).toBeInTheDocument();
-    expect(screen.getByLabelText('Odeslat zprávu')).toBeInTheDocument();
+    expect(screen.getByLabelText('Přidat emoji')).toBeInTheDocument();
+    expect(screen.getByLabelText('Odeslat')).toBeInTheDocument();
   });
 
-  it('should handle message submission', async () => {
-    const mockResponse = { id: 'msg123', content: 'Test message' };
-    (api.post as jest.Mock).mockResolvedValue({ data: mockResponse });
-
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+  it('handles message sending', async () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     const input = screen.getByPlaceholderText('Napište zprávu...');
-    const submitButton = screen.getByLabelText('Odeslat zprávu');
+    const sendButton = screen.getByLabelText('Odeslat');
 
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.click(submitButton);
+    fireEvent.click(sendButton);
 
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith('/messages', {
-        recipientId,
-        content: 'Test message'
+      expect(mockOnSend).toHaveBeenCalledWith({
+        content: 'Test message',
+        attachments: [],
+        expiresAt: null
       });
-      expect(mockOnMessageSent).toHaveBeenCalledWith(mockResponse);
-      expect(input).toHaveValue('');
     });
   });
 
-  it('should handle file attachment', async () => {
-    const file = new File(['test'], 'test.txt', { type: 'text/plain' });
-    const mockResponse = { id: 'msg123', content: 'Test message', attachments: [file] };
-    (api.post as jest.Mock).mockResolvedValue({ data: mockResponse });
+  it('handles file attachments', async () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
-
+    const file = new File(['test'], 'test.png', { type: 'image/png' });
     const fileInput = screen.getByLabelText('Přidat přílohu');
-    const submitButton = screen.getByLabelText('Odeslat zprávu');
 
     fireEvent.change(fileInput, { target: { files: [file] } });
-    fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(FormData)
-      );
-      expect(mockOnMessageSent).toHaveBeenCalledWith(mockResponse);
+      expect(screen.getByText('test.png')).toBeInTheDocument();
     });
   });
 
-  it('should handle emoji selection', () => {
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+  it('handles emoji selection', async () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     const emojiButton = screen.getByLabelText('Přidat emoji');
     fireEvent.click(emojiButton);
 
-    expect(screen.getByText('Vyberte emoji')).toBeInTheDocument();
-  });
-
-  it('should handle typing indicator', async () => {
-    const mockHandleTyping = jest.fn();
-    (useTypingIndicator as jest.Mock).mockReturnValue({
-      handleTyping: mockHandleTyping
+    await waitFor(() => {
+      expect(screen.getByText('Vyberte emoji')).toBeInTheDocument();
     });
 
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+    const emoji = screen.getByText('😊');
+    fireEvent.click(emoji);
+
+    expect(screen.getByPlaceholderText('Napište zprávu...')).toHaveValue('😊');
+  });
+
+  it('handles typing indicator', async () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     const input = screen.getByPlaceholderText('Napište zprávu...');
     fireEvent.change(input, { target: { value: 'Test' } });
 
     await waitFor(() => {
-      expect(mockHandleTyping).toHaveBeenCalledWith('Test');
+      expect(mockOnTyping).toHaveBeenCalledWith(true);
     });
   });
 
-  it('should handle draft saving', async () => {
-    const mockSetDraft = jest.fn();
-    (useLocalStorage as jest.Mock).mockReturnValue(['', mockSetDraft]);
-
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+  it('handles draft saving', async () => {
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     const input = screen.getByPlaceholderText('Napište zprávu...');
     fireEvent.change(input, { target: { value: 'Draft message' } });
 
+    // Simulace odchodu z komponenty
+    const { unmount } = render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
+    unmount();
+
+    // Znovu načtení komponenty
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
+
     await waitFor(() => {
-      expect(mockSetDraft).toHaveBeenCalledWith('Draft message');
+      expect(screen.getByPlaceholderText('Napište zprávu...')).toHaveValue('Draft message');
     });
   });
 
-  it('should handle error during message submission', async () => {
-    (api.post as jest.Mock).mockRejectedValue(new Error('Failed to send message'));
+  it('handles errors', async () => {
+    const mockError = new Error('Test error');
+    mockOnSend.mockRejectedValueOnce(mockError);
 
-    render(<MessageComposer recipientId={recipientId} onMessageSent={mockOnMessageSent} />);
+    render(
+      <MessageComposer
+        onSend={mockOnSend}
+        onTyping={mockOnTyping}
+        recipientId={mockRecipientId}
+      />
+    );
 
     const input = screen.getByPlaceholderText('Napište zprávu...');
-    const submitButton = screen.getByLabelText('Odeslat zprávu');
+    const sendButton = screen.getByLabelText('Odeslat');
 
     fireEvent.change(input, { target: { value: 'Test message' } });
-    fireEvent.click(submitButton);
+    fireEvent.click(sendButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Nepodařilo se odeslat zprávu')).toBeInTheDocument();
+      expect(screen.getByText('Chyba při odesílání zprávy')).toBeInTheDocument();
     });
   });
 }); 
