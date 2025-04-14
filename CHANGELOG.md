@@ -292,15 +292,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Error handling
   - Input validation
 - NotificationService implementation with:
-  - Real-time notifications via WebSocket
-  - Notification types (message, friend request, system, security)
-  - Notification management (create, read, delete)
-  - Unread notifications count
-  - Pagination support
-  - Notification grouping
-  - Notification persistence
-  - Error handling
-  - Secure logging
+  - Create notification functionality
+  - Get notifications with pagination
+  - Mark notifications as read
+  - Delete notifications
+  - Get unread count
+  - Error handling and logging
 - NotificationRepository implementation with:
   - Database operations for notifications
   - Efficient querying with pagination
@@ -315,12 +312,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Timestamp tracking
   - Custom data support
 - Notification routes implementation with:
+  - POST /notifications - Create notification
+  - GET /notifications/:userId - Get notifications with pagination
+  - PATCH /notifications/:id/read - Mark notification as read
+  - DELETE /notifications/:id - Delete notification
+  - GET /notifications/:userId/unread-count - Get unread count
   - Authentication middleware
-  - RESTful endpoints for notification operations
-  - Real-time WebSocket notifications
-  - Input validation
-  - Error handling
-  - Secure logging
+  - RESTful API design
 - Notification testy:
   - NotificationService testy:
     - Testování vytváření notifikací
@@ -355,12 +353,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Quiet hours functionality
   - Default preferences creation
   - Preference validation
-- Enhanced notification service with:
-  - Preference-based notification filtering
-  - Quiet hours support
-  - Improved notification delivery logic
+- NotificationPreferenceService implementation with:
+  - Get user preferences
+  - Update preferences
+  - Delete preferences
+  - Create default preferences
+  - Error handling and logging
+- PushNotificationService implementation with:
+  - Register push subscriptions
+  - Unregister subscriptions
+  - Send push notifications
+  - Cleanup expired subscriptions
+  - Error handling and logging
+- Enhanced notification system with:
   - Better error handling
-  - Enhanced logging
+  - Improved logging
+  - Type safety
+  - Input validation
+  - Security measures
+  - RESTful API endpoints
+  - Proper HTTP status codes
+  - Detailed error messages
+  - Authentication middleware
+  - API documentation
 - Notification preferences model with:
   - MongoDB schema
   - Index optimization
@@ -374,15 +389,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Error handling
   - Logging
 - Notification preferences controller with:
-  - RESTful endpoints for preferences
-  - Input validation
-  - Error handling
-  - Secure logging
+  - GET /preferences/:userId - Get preferences
+  - PUT /preferences/:userId - Update preferences
+  - DELETE /preferences/:userId - Delete preferences
+  - POST /preferences/:userId/default - Create default preferences
+  - Input validation using Zod
+  - Error handling and logging
 - Notification preferences routes with:
+  - GET /preferences/:userId - Get preferences
+  - PUT /preferences/:userId - Update preferences
+  - DELETE /preferences/:userId - Delete preferences
+  - POST /preferences/:userId/default - Create default preferences
   - Authentication middleware
-  - RESTful endpoints
-  - Input validation
-  - Error handling
+  - RESTful API design
 - Notification preferences tests with:
   - Preference retrieval tests
   - Default preference creation tests
@@ -807,6 +826,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Error handling tests
   - Basic notification delivery tests
   - A/B test simulation with metrics tracking
+- NotificationController implementation with:
+  - Create notification endpoint
+  - Get notifications endpoint with pagination
+  - Mark notification as read endpoint
+  - Delete notification endpoint
+  - Get unread count endpoint
+  - Input validation using Zod
+  - Error handling and logging
+- NotificationPreferenceController implementation with:
+  - Get preferences endpoint
+  - Update preferences endpoint
+  - Delete preferences endpoint
+  - Create default preferences endpoint
+  - Input validation using Zod
+  - Error handling and logging
+- PushNotificationController implementation with:
+  - Register subscription endpoint
+  - Unregister subscription endpoint
+  - Send notification endpoint
+  - Cleanup expired subscriptions endpoint
+  - Input validation using Zod
+  - Error handling and logging
+- Authentication middleware implementation with:
+  - JWT token verification
+  - Authorization header validation
+  - Error handling
+  - Logging
+  - Security measures
+  - Type safety
+  - Detailed error messages
+- Enhanced notification system with:
+  - Better error handling
+  - Improved logging
+  - Type safety
+  - Input validation
+  - Security measures
+  - RESTful API endpoints
+  - Proper HTTP status codes
+  - Detailed error messages
+  - Authentication middleware
+  - API documentation
+  - Secure token handling
+- Implementace loggeru s následujícími funkcemi:
+  - Víceúrovňové logování (info, error)
+  - Formátování logů s časovými značkami
+  - Ukládání logů do souborů
+  - Konzolový výstup v development prostředí
+  - JSON formátování pro produkční prostředí
+  - Barevné zvýraznění v konzoli
+  - Oddělené soubory pro chyby a všeobecné logy
+  - Podpora různých prostředí (development/production)
+  - Strukturované logování
+  - Snadná rozšiřitelnost
 
 ### Changed
 
@@ -1129,6 +1201,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced notification testing infrastructure
 - Improved error handling in notification services
 - Optimized performance testing methodology
+- Vylepšení systému logování:
+  - Lepší organizace logů
+  - Víceúrovňové logování
+  - Formátování logů
+  - Ukládání logů
+  - Konzolový výstup
+  - JSON formátování
+  - Barevné zvýraznění
+  - Strukturované logování
+  - Podpora prostředí
+  - Rozšiřitelnost
 
 ### Deprecated
 
@@ -1389,3 +1472,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced authorization
   - Better data encryption
   - Improved security monitoring
+- Added input validation in notification services
+- Enhanced error handling and logging
+- Improved type safety
+- Added security measures for push notifications
+- Enhanced data protection in notification system
+- Added input validation in notification controllers
+- Enhanced error handling and logging
+- Improved type safety
+- Added security measures for push notifications
+- Enhanced data protection in notification system
+- Added proper HTTP status codes
+- Improved error messages
+- Enhanced API security
+- Vylepšení bezpečnosti logování:
+  - Oddělené soubory pro chyby
+  - Strukturované logování
+  - Bezpečné ukládání logů
+  - Ochrana citlivých dat
+  - Správné formátování
+  - Bezpečné prostředí
+  - Ochrana logů
+  - Bezpečnost dat
+  - Ochrana informací
+  - Bezpečné ukládání

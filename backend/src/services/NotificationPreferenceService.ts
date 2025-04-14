@@ -1,57 +1,75 @@
 import { NotificationPreferenceRepository } from '../repositories/NotificationPreferenceRepository';
 import { NotificationPreference } from '../types/notifications';
+import { logger } from '../utils/logger';
 
 export class NotificationPreferenceService {
-  private repository: NotificationPreferenceRepository;
+  private preferenceRepository: NotificationPreferenceRepository;
 
   constructor() {
-    this.repository = new NotificationPreferenceRepository();
+    this.preferenceRepository = new NotificationPreferenceRepository();
   }
 
-  async getPreferences(userId: string) {
-    let preferences = await this.repository.findByUserId(userId);
-
-    if (!preferences) {
-      // Vytvoření výchozího nastavení, pokud neexistuje
-      preferences = await this.createDefaultPreferences(userId);
+  async getPreferences(userId: string): Promise<NotificationPreference | null> {
+    try {
+      return await this.preferenceRepository.findByUserId(userId);
+    } catch (error) {
+      logger.error('Chyba při získávání preferencí notifikací:', error);
+      throw new Error('Nepodařilo se získat preference notifikací');
     }
-
-    return preferences;
   }
 
-  async updatePreferences(userId: string, preferences: Partial<NotificationPreference>) {
-    const existingPreferences = await this.repository.findByUserId(userId);
+  async updatePreferences(userId: string, preferences: Partial<NotificationPreference>): Promise<NotificationPreference> {
+    try {
+      const existingPreferences = await this.preferenceRepository.findByUserId(userId);
+      
+      if (!existingPreferences) {
+        return await this.preferenceRepository.create({
+          userId,
+          ...preferences
+        });
+      }
 
-    if (!existingPreferences) {
-      throw new Error('Nastavení notifikací nenalezeno');
+      return await this.preferenceRepository.update(userId, preferences);
+    } catch (error) {
+      logger.error('Chyba při aktualizaci preferencí notifikací:', error);
+      throw new Error('Nepodařilo se aktualizovat preference notifikací');
     }
-
-    return this.repository.update(userId, {
-      ...existingPreferences,
-      ...preferences,
-    });
   }
 
-  private async createDefaultPreferences(userId: string): Promise<NotificationPreference> {
-    const defaultPreferences: NotificationPreference = {
-      userId,
-      email: true,
-      push: true,
-      inApp: true,
-      quietHours: {
-        enabled: false,
-        start: '22:00',
-        end: '07:00',
-      },
-      notificationTypes: {
-        message: true,
-        friend_request: true,
-        system: true,
-        security: true,
-      },
-    };
+  async deletePreferences(userId: string): Promise<void> {
+    try {
+      await this.preferenceRepository.delete(userId);
+    } catch (error) {
+      logger.error('Chyba při mazání preferencí notifikací:', error);
+      throw new Error('Nepodařilo se smazat preference notifikací');
+    }
+  }
 
-    return this.repository.create(defaultPreferences);
+  async createDefaultPreferences(userId: string): Promise<NotificationPreference> {
+    try {
+      const defaultPreferences: Omit<NotificationPreference, 'id'> = {
+        userId,
+        email: true,
+        push: true,
+        inApp: true,
+        quietHours: {
+          enabled: false,
+          start: '22:00',
+          end: '08:00'
+        },
+        notificationTypes: {
+          message: true,
+          friendRequest: true,
+          system: true,
+          security: true
+        }
+      };
+
+      return await this.preferenceRepository.create(defaultPreferences);
+    } catch (error) {
+      logger.error('Chyba při vytváření výchozích preferencí:', error);
+      throw new Error('Nepodařilo se vytvořit výchozí preference');
+    }
   }
 
   async isNotificationAllowed(
@@ -62,7 +80,7 @@ export class NotificationPreferenceService {
     const preferences = await this.getPreferences(userId);
 
     // Kontrola tichých hodin
-    if (preferences.quietHours.enabled) {
+    if (preferences?.quietHours.enabled) {
       const now = new Date();
       const [startHour, startMinute] = preferences.quietHours.start.split(':').map(Number);
       const [endHour, endMinute] = preferences.quietHours.end.split(':').map(Number);
@@ -79,7 +97,7 @@ export class NotificationPreferenceService {
     }
 
     // Kontrola typu notifikace
-    if (!preferences.notificationTypes[type]) {
+    if (!preferences?.notificationTypes[type]) {
       return false;
     }
 

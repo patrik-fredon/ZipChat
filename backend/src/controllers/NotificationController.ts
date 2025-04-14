@@ -1,114 +1,82 @@
 import { Request, Response } from 'express';
-import { NotificationPreferenceService } from '../services/NotificationPreferenceService';
+import { z } from 'zod';
 import { NotificationService } from '../services/NotificationService';
-import { PushNotificationService } from '../services/PushNotificationService';
+import { logger } from '../utils/logger';
+
+const notificationSchema = z.object({
+    userId: z.string(),
+    type: z.enum(['message', 'friendRequest', 'system', 'security']),
+    title: z.string(),
+    body: z.string(),
+    data: z.record(z.any()).optional()
+});
 
 export class NotificationController {
-  private notificationService: NotificationService;
-  private preferenceService: NotificationPreferenceService;
-  private pushService: PushNotificationService;
+    private notificationService: NotificationService;
 
-  constructor() {
-    this.notificationService = new NotificationService();
-    this.preferenceService = new NotificationPreferenceService();
-    this.pushService = new PushNotificationService();
-  }
-
-  async getNotifications(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const { page = 1, limit = 20 } = req.query;
-      const notifications = await this.notificationService.getNotifications(
-        userId,
-        Number(page),
-        Number(limit)
-      );
-      res.json(notifications);
-    } catch (error) {
-      console.error('Chyba při získávání notifikací:', error);
-      res.status(500).json({ message: 'Chyba při získávání notifikací' });
+    constructor() {
+        this.notificationService = new NotificationService();
     }
-  }
 
-  async getUnreadCount(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const count = await this.notificationService.getUnreadCount(userId);
-      res.json({ count });
-    } catch (error) {
-      console.error('Chyba při získávání počtu nepřečtených notifikací:', error);
-      res.status(500).json({ message: 'Chyba při získávání počtu nepřečtených notifikací' });
+    async createNotification(req: Request, res: Response): Promise<void> {
+        try {
+            const validatedData = notificationSchema.parse(req.body);
+            const notification = await this.notificationService.createNotification(validatedData);
+            res.status(201).json(notification);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                res.status(400).json({ error: 'Neplatná data', details: error.errors });
+                return;
+            }
+            logger.error('Chyba při vytváření notifikace:', error);
+            res.status(500).json({ error: 'Nepodařilo se vytvořit notifikaci' });
+        }
     }
-  }
 
-  async markAsRead(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const notificationId = req.params.id;
-      await this.notificationService.markAsRead(userId, notificationId);
-      res.json({ message: 'Notifikace označena jako přečtená' });
-    } catch (error) {
-      console.error('Chyba při označování notifikace jako přečtené:', error);
-      res.status(500).json({ message: 'Chyba při označování notifikace jako přečtené' });
-    }
-  }
+    async getNotifications(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.params.userId;
+            const limit = parseInt(req.query.limit as string) || 20;
+            const offset = parseInt(req.query.offset as string) || 0;
 
-  async deleteNotification(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const notificationId = req.params.id;
-      await this.notificationService.deleteNotification(userId, notificationId);
-      res.json({ message: 'Notifikace smazána' });
-    } catch (error) {
-      console.error('Chyba při mazání notifikace:', error);
-      res.status(500).json({ message: 'Chyba při mazání notifikace' });
+            const notifications = await this.notificationService.getNotifications(userId, limit, offset);
+            res.json(notifications);
+        } catch (error) {
+            logger.error('Chyba při získávání notifikací:', error);
+            res.status(500).json({ error: 'Nepodařilo se získat notifikace' });
+        }
     }
-  }
 
-  async getPreferences(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const preferences = await this.preferenceService.getPreferences(userId);
-      res.json(preferences);
-    } catch (error) {
-      console.error('Chyba při získávání nastavení notifikací:', error);
-      res.status(500).json({ message: 'Chyba při získávání nastavení notifikací' });
+    async markAsRead(req: Request, res: Response): Promise<void> {
+        try {
+            const notificationId = req.params.id;
+            await this.notificationService.markAsRead(notificationId);
+            res.status(200).json({ message: 'Notifikace označena jako přečtená' });
+        } catch (error) {
+            logger.error('Chyba při označení notifikace jako přečtené:', error);
+            res.status(500).json({ error: 'Nepodařilo se označit notifikaci jako přečtenou' });
+        }
     }
-  }
 
-  async updatePreferences(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const preferences = req.body;
-      await this.preferenceService.updatePreferences(userId, preferences);
-      res.json({ message: 'Nastavení notifikací aktualizováno' });
-    } catch (error) {
-      console.error('Chyba při aktualizaci nastavení notifikací:', error);
-      res.status(500).json({ message: 'Chyba při aktualizaci nastavení notifikací' });
+    async deleteNotification(req: Request, res: Response): Promise<void> {
+        try {
+            const notificationId = req.params.id;
+            await this.notificationService.deleteNotification(notificationId);
+            res.status(200).json({ message: 'Notifikace smazána' });
+        } catch (error) {
+            logger.error('Chyba při mazání notifikace:', error);
+            res.status(500).json({ error: 'Nepodařilo se smazat notifikaci' });
+        }
     }
-  }
 
-  async registerPushToken(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const { token, platform } = req.body;
-      await this.pushService.registerToken(userId, token, platform);
-      res.json({ message: 'Push token zaregistrován' });
-    } catch (error) {
-      console.error('Chyba při registraci push tokenu:', error);
-      res.status(500).json({ message: 'Chyba při registraci push tokenu' });
+    async getUnreadCount(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.params.userId;
+            const count = await this.notificationService.getUnreadCount(userId);
+            res.json({ count });
+        } catch (error) {
+            logger.error('Chyba při získávání počtu nepřečtených notifikací:', error);
+            res.status(500).json({ error: 'Nepodařilo se získat počet nepřečtených notifikací' });
+        }
     }
-  }
-
-  async unregisterPushToken(req: Request, res: Response) {
-    try {
-      const userId = req.user.id;
-      const token = req.params.token;
-      await this.pushService.unregisterToken(userId, token);
-      res.json({ message: 'Push token zrušen' });
-    } catch (error) {
-      console.error('Chyba při zrušení registrace push tokenu:', error);
-      res.status(500).json({ message: 'Chyba při zrušení registrace push tokenu' });
-    }
-  }
 } 
