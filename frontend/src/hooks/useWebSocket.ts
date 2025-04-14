@@ -1,20 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 
 interface WebSocketMessage {
-	event: string;
+	type: string;
 	data: any;
 }
 
-export const useWebSocket = (url: string) => {
+export const useWebSocket = (url: string = 'ws://localhost:3000') => {
 	const { token } = useAuth();
+	const [socket, setSocket] = useState<WebSocket | null>(null);
 	const [isConnected, setIsConnected] = useState(false);
+	const [messages, setMessages] = useState<WebSocketMessage[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const wsRef = useRef<WebSocket | null>(null);
 	const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
-	const connect = () => {
-		if (wsRef.current?.readyState === WebSocket.OPEN) {
+	const connect = useCallback(() => {
+		if (socket?.readyState === WebSocket.OPEN) {
 			return;
 		}
 
@@ -39,13 +40,26 @@ export const useWebSocket = (url: string) => {
 				console.error('WebSocket chyba:', event);
 			};
 
-			wsRef.current = ws;
+			ws.onmessage = (event) => {
+				try {
+					const message = JSON.parse(event.data);
+					setMessages(prev => [...prev, message]);
+				} catch (err) {
+					console.error('Chyba při zpracování WebSocket zprávy:', err);
+				}
+			};
+
+			setSocket(ws);
+
+			return () => {
+				ws.close();
+			};
 		} catch (err) {
 			setError('Chyba při vytváření WebSocket připojení');
 			console.error('Chyba při vytváření WebSocket:', err);
 			reconnect();
 		}
-	};
+	}, [token, url]);
 
 	const reconnect = () => {
 		if (reconnectTimeoutRef.current) {
@@ -58,50 +72,40 @@ export const useWebSocket = (url: string) => {
 		}, 5000);
 	};
 
-	const send = (event: string, data: any) => {
-		if (wsRef.current?.readyState === WebSocket.OPEN) {
-			wsRef.current.send(JSON.stringify({ event, data }));
+	const send = useCallback((message: WebSocketMessage) => {
+		if (socket && isConnected) {
+			socket.send(JSON.stringify(message));
 		} else {
 			setError('WebSocket není připojen');
 		}
-	};
+	}, [socket, isConnected]);
 
-	const addEventListener = (event: string, callback: (data: any) => void) => {
-		if (!wsRef.current) return;
+	const subscribe = useCallback((type: string, callback: (data: any) => void) => {
+		if (socket && isConnected) {
+			const message = { type: 'subscribe', data: { type } };
+			socket.send(JSON.stringify(message));
 
-		const messageHandler = (event: MessageEvent) => {
-			try {
-				const message: WebSocketMessage = JSON.parse(event.data);
-				if (message.event === event) {
-					callback(message.data);
+			const unsubscribe = () => {
+				if (socket && isConnected) {
+					const message = { type: 'unsubscribe', data: { type } };
+					socket.send(JSON.stringify(message));
 				}
-			} catch (err) {
-				console.error('Chyba při zpracování WebSocket zprávy:', err);
-			}
-		};
+			};
 
-		wsRef.current.addEventListener('message', messageHandler);
-
-		return () => {
-			wsRef.current?.removeEventListener('message', messageHandler);
-		};
-	};
+			return unsubscribe;
+		}
+	}, [socket, isConnected]);
 
 	useEffect(() => {
-		connect();
-
-		return () => {
-			if (reconnectTimeoutRef.current) {
-				clearTimeout(reconnectTimeoutRef.current);
-			}
-			wsRef.current?.close();
-		};
-	}, [token]);
+		const cleanup = connect();
+		return cleanup;
+	}, [connect]);
 
 	return {
 		isConnected,
 		error,
+		messages,
 		send,
-		addEventListener
+		subscribe,
 	};
 };

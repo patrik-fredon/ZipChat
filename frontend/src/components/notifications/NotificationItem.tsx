@@ -1,81 +1,57 @@
-import { BellIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { INotification } from '../../types/notification.types';
+import { NotificationType } from '../../types/notifications';
 import { formatDate } from '../../utils/dateUtils';
 
 interface NotificationItemProps {
-  notification: INotification;
-  onMarkAsRead: (notificationIds: string[]) => void;
-  onDelete: (notificationIds: string[]) => void;
+  notification: NotificationType;
+  onClick: () => void;
+  onDelete: () => void;
 }
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
-  onMarkAsRead,
-  onDelete
+  onClick,
+  onDelete,
 }) => {
-  const { t } = useTranslation();
-
   const getNotificationIcon = () => {
     switch (notification.type) {
       case 'message':
-        return <BellIcon className="h-5 w-5 text-blue-500" />;
+        return '💬';
       case 'friend_request':
-        return <BellIcon className="h-5 w-5 text-green-500" />;
+        return '👤';
       case 'system':
-        return <BellIcon className="h-5 w-5 text-yellow-500" />;
+        return '⚙️';
       case 'security':
-        return <BellIcon className="h-5 w-5 text-red-500" />;
+        return '🔒';
       default:
-        return <BellIcon className="h-5 w-5 text-gray-500" />;
+        return '📢';
     }
   };
 
   return (
     <div
-      className={`p-4 rounded-lg shadow-sm border ${notification.read
-        ? 'bg-gray-50 border-gray-200'
-        : 'bg-white border-blue-200'
-        }`}
+      className={`notification-item ${notification.read ? 'read' : 'unread'}`}
+      onClick={onClick}
     >
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0">{getNotificationIcon()}</div>
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start">
-            <h3 className="text-sm font-medium text-gray-900">
-              {notification.title}
-            </h3>
-            <span className="text-xs text-gray-500">
-              {formatDate(notification.createdAt)}
-            </span>
-          </div>
-          <p className="mt-1 text-sm text-gray-600">{notification.content}</p>
-          {notification.data && (
-            <div className="mt-2 text-xs text-gray-500">
-              {JSON.stringify(notification.data)}
-            </div>
-          )}
+      <div className="notification-icon">{getNotificationIcon()}</div>
+      <div className="notification-content">
+        <div className="notification-header">
+          <h3>{notification.title}</h3>
+          <span className="notification-time">
+            {formatDate(notification.createdAt)}
+          </span>
         </div>
-        <div className="flex space-x-2">
-          {!notification.read && (
-            <button
-              onClick={() => onMarkAsRead([notification._id])}
-              className="p-1 text-gray-400 hover:text-green-500"
-              title={t('notifications.markAsRead')}
-            >
-              <CheckIcon className="h-5 w-5" />
-            </button>
-          )}
-          <button
-            onClick={() => onDelete([notification._id])}
-            className="p-1 text-gray-400 hover:text-red-500"
-            title={t('notifications.delete')}
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        </div>
+        <p className="notification-message">{notification.message}</p>
       </div>
+      <button
+        className="notification-delete"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
+      >
+        ×
+      </button>
     </div>
   );
 }; 

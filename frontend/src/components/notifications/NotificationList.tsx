@@ -3,15 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
 import { useWebSocket } from '../../hooks/useWebSocket';
 import { INotification } from '../../types/notification.types';
+import { NotificationType } from '../../types/notifications';
 import { NotificationItem } from './NotificationItem';
 
 interface NotificationListProps {
   userId: string;
+  notifications: NotificationType[];
+  onNotificationClick: (notification: NotificationType) => void;
+  onNotificationDelete: (notificationId: string) => void;
 }
 
-export const NotificationList: React.FC<NotificationListProps> = ({ userId }) => {
+export const NotificationList: React.FC<NotificationListProps> = ({
+  userId,
+  notifications,
+  onNotificationClick,
+  onNotificationDelete,
+}) => {
   const { t } = useTranslation();
-  const [notifications, setNotifications] = useState<INotification[]>([]);
+  const [notificationsState, setNotifications] = useState<INotification[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,13 +119,13 @@ export const NotificationList: React.FC<NotificationListProps> = ({ userId }) =>
     <div className="space-y-2">
       {notifications.map((notification, index) => (
         <div
-          key={notification._id}
+          key={notification.id}
           ref={index === notifications.length - 1 ? lastElementRef : null}
         >
           <NotificationItem
             notification={notification}
-            onMarkAsRead={handleMarkAsRead}
-            onDelete={handleDelete}
+            onClick={() => onNotificationClick(notification)}
+            onDelete={() => onNotificationDelete(notification.id)}
           />
         </div>
       ))}

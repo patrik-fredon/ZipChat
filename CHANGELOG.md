@@ -335,41 +335,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Testování chybových stavů
     - Testování WebSocket notifikací
 - Frontend notifikační komponenty:
-  - NotificationList komponenta:
-    - Zobrazení seznamu notifikací
-    - Infinite scroll pro načítání
-    - Real-time aktualizace přes WebSocket
-    - Označování jako přečtené
-    - Mazání notifikací
-    - Loading stavy
-    - Error handling
-  - NotificationItem komponenta:
-    - Zobrazení jednotlivé notifikace
-    - Typové ikony (message, friend request, system, security)
-    - Časové razítko
-    - Stav přečtení
-    - Akce (označit jako přečtené, smazat)
-    - Responsive design
-    - Accessibility improvements
-  - Notification typy:
-    - Type-safe rozhraní pro notifikace
-    - Response typy pro API
-    - Custom data support
-- Frontend testy pro notifikační komponenty:
-  - NotificationList testy:
-    - Testování vykreslení notifikací
-    - Testování prázdného stavu
-    - Testování chybového stavu
-    - Testování WebSocket aktualizací
-    - Testování infinite scroll
-    - Testování načítání
-  - NotificationItem testy:
-    - Testování vykreslení obsahu
-    - Testování akcí (označit jako přečtené, smazat)
-    - Testování stylů pro přečtené/nepřečtené
-    - Testování ikon pro různé typy notifikací
-    - Testování časových razítek
-    - Testování přístupnosti
+  - NotificationManager komponenta pro správu notifikací
+  - NotificationList komponenta pro zobrazení seznamu notifikací
+  - NotificationItem komponenta pro zobrazení jednotlivé notifikace
+  - NotificationPreferences komponenta pro správu nastavení notifikací
+  - Podpora pro různé typy notifikací (message, friend_request, system, security)
+  - Real-time aktualizace notifikací přes WebSocket
+  - Nastavení tichých hodin
+  - Podpora pro email, push a in-app notifikace
+  - Česká lokalizace
+  - Responzivní design s Tailwind CSS
+  - Přístupnost (accessibility)
 - Notification preferences system with:
   - User notification settings management
   - Email notification preferences

@@ -1,140 +1,80 @@
-import { useCallback, useEffect, useState } from 'react';
-import { api } from '../services/api';
-import { logger } from '../utils/logger';
-
-interface PushNotificationState {
-  isSupported: boolean;
-  isPermissionGranted: boolean;
-  token: string | null;
-  error: string | null;
-}
+import { useEffect, useState } from 'react';
 
 export const usePushNotifications = () => {
-  const [state, setState] = useState<PushNotificationState>({
-    isSupported: false,
-    isPermissionGranted: false,
-    token: null,
-    error: null
-  });
-
-  const checkSupport = useCallback(() => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      setState(prev => ({
-        ...prev,
-        isSupported: false,
-        error: 'Push notifications are not supported in this browser'
-      }));
-      return false;
-    }
-    return true;
-  }, []);
-
-  const checkPermission = useCallback(async () => {
-    try {
-      const permission = await Notification.permission;
-      setState(prev => ({
-        ...prev,
-        isPermissionGranted: permission === 'granted'
-      }));
-      return permission === 'granted';
-    } catch (error) {
-      logger.error('Error checking notification permission:', error);
-      setState(prev => ({
-        ...prev,
-        error: 'Failed to check notification permission'
-      }));
-      return false;
-    }
-  }, []);
-
-  const requestPermission = useCallback(async () => {
-    try {
-      if (!checkSupport()) return false;
-
-      const permission = await Notification.requestPermission();
-      const isGranted = permission === 'granted';
-      
-      setState(prev => ({
-        ...prev,
-        isPermissionGranted: isGranted
-      }));
-
-      return isGranted;
-    } catch (error) {
-      logger.error('Error requesting notification permission:', error);
-      setState(prev => ({
-        ...prev,
-        error: 'Failed to request notification permission'
-      }));
-      return false;
-    }
-  }, [checkSupport]);
-
-  const registerToken = useCallback(async () => {
-    try {
-      if (!state.isPermissionGranted) {
-        const granted = await requestPermission();
-        if (!granted) return null;
-      }
-
-      const registration = await navigator.serviceWorker.ready;
-      const token = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: process.env.REACT_APP_VAPID_PUBLIC_KEY
-      });
-
-      await api.post('/notifications/fcm-token', {
-        token: token.toJSON(),
-        deviceId: navigator.userAgent,
-        platform: 'web'
-      });
-
-      setState(prev => ({
-        ...prev,
-        token: token.toJSON().endpoint
-      }));
-
-      return token.toJSON().endpoint;
-    } catch (error) {
-      logger.error('Error registering push notification token:', error);
-      setState(prev => ({
-        ...prev,
-        error: 'Failed to register push notification token'
-      }));
-      return null;
-    }
-  }, [state.isPermissionGranted, requestPermission]);
-
-  const unregisterToken = useCallback(async () => {
-    try {
-      if (!state.token) return;
-
-      await api.delete('/notifications/fcm-token', {
-        data: { token: state.token }
-      });
-
-      setState(prev => ({
-        ...prev,
-        token: null
-      }));
-    } catch (error) {
-      logger.error('Error unregistering push notification token:', error);
-      setState(prev => ({
-        ...prev,
-        error: 'Failed to unregister push notification token'
-      }));
-    }
-  }, [state.token]);
+  const [isSupported, setIsSupported] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkSupport();
-    checkPermission();
-  }, [checkSupport, checkPermission]);
+    // Kontrola podpory push notifikací
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      setIsSupported(true);
+      setPermission(Notification.permission);
+    }
+  }, []);
+
+  const requestPermission = async () => {
+    if (!isSupported) {
+      setError('Push notifikace nejsou podporovány v tomto prohlížeči');
+      return;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      setPermission(permission);
+
+      if (permission === 'granted') {
+        // Registrace service workeru
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        
+        // Získání push tokenu
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        });
+
+        // Odeslání tokenu na server
+        const response = await fetch('/api/push/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(subscription),
+        });
+
+        if (!response.ok) {
+          throw new Error('Nepodařilo se zaregistrovat push notifikace');
+        }
+
+        const data = await response.json();
+        setToken(data.token);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nastala chyba při registraci push notifikací');
+    }
+  };
+
+  const unregister = async () => {
+    if (!token) return;
+
+    try {
+      await fetch(`/api/push/unregister/${token}`, {
+        method: 'DELETE',
+      });
+
+      setToken(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Nastala chyba při zrušení registrace push notifikací');
+    }
+  };
 
   return {
-    ...state,
+    isSupported,
+    permission,
+    token,
+    error,
     requestPermission,
-    registerToken,
-    unregisterToken
+    unregister,
   };
 }; 
