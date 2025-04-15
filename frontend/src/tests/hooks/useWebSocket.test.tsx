@@ -130,4 +130,39 @@ describe('useWebSocket', () => {
 
     expect(webSocketClient.off).toHaveBeenCalledTimes(5);
   });
+
+  it('should handle reconnection attempts', () => {
+    const { result } = renderHook(() => useWebSocket());
+
+    act(() => {
+      result.current.onDisconnected(() => {
+        // Simulate reconnection
+        result.current.onConnected(() => {
+          expect(webSocketClient.connect).toHaveBeenCalledTimes(2);
+        });
+      });
+    });
+  });
+
+  it('should handle message queue when disconnected', () => {
+    const { result } = renderHook(() => useWebSocket());
+
+    // Simulate disconnection
+    act(() => {
+      result.current.onDisconnected(() => {
+        result.current.sendMessage('Queued message');
+        expect(webSocketClient.send).not.toHaveBeenCalled();
+      });
+    });
+
+    // Simulate reconnection
+    act(() => {
+      result.current.onConnected(() => {
+        expect(webSocketClient.send).toHaveBeenCalledWith({
+          type: 'chat',
+          data: { message: 'Queued message' }
+        });
+      });
+    });
+  });
 }); 

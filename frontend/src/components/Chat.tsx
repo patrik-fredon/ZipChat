@@ -58,18 +58,10 @@ export const Chat: React.FC = () => {
   }, [onMessage, onTyping, onConnected, onDisconnected, onError]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      try {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      } catch (error) {
-        // Ignore scroll errors in test environment
-        console.warn('Scroll error:', error);
-      }
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = () => {
     if (input.trim()) {
       sendMessage(input);
       setInput('');
@@ -86,44 +78,62 @@ export const Chat: React.FC = () => {
     }
   };
 
-  const handleInputBlur = () => {
-    setIsTyping(false);
-    sendTyping(false);
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
     <div className="chat-container">
-      {error && <div className="error-message">{error}</div>}
-      <div className={`connection-status ${connectionStatus}`}>
-        {connectionStatus === 'connected' ? 'Připojeno' : 'Odpojeno'}
+      <div className="chat-header">
+        <h2>Chat</h2>
+        <div className={`connection-status ${connectionStatus}`}>
+          {connectionStatus === 'connected' ? 'Připojeno' : 'Odpojeno'}
+        </div>
       </div>
-      <div className="messages">
+
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <div className="messages-container">
         {messages.map((message, index) => (
           <div key={index} className="message">
-            <span className="user">{message.userId}</span>
-            <span className="content">{message.content}</span>
+            <div className="message-content">{message.content}</div>
+            <div className="message-time">{new Date(message.timestamp).toLocaleTimeString()}</div>
           </div>
         ))}
-        {typingUsers.length > 0 && (
-          <div className="typing-indicator">
-            {typingUsers.join(', ')} {typingUsers.length === 1 ? 'píše' : 'píší'}...
-          </div>
-        )}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSubmit} className="message-form">
+
+      {typingUsers.length > 0 && (
+        <div className="typing-indicator">
+          {typingUsers.length === 1
+            ? 'Někdo píše...'
+            : `${typingUsers.length} lidé píší...`}
+        </div>
+      )}
+
+      <div className="input-container">
         <input
           type="text"
           value={input}
           onChange={handleInputChange}
-          onBlur={handleInputBlur}
+          onKeyPress={handleKeyPress}
           placeholder="Napište zprávu..."
           disabled={connectionStatus === 'disconnected'}
         />
-        <button type="submit" disabled={connectionStatus === 'disconnected'}>
+        <button
+          onClick={handleSendMessage}
+          disabled={!input.trim() || connectionStatus === 'disconnected'}
+        >
           Odeslat
         </button>
-      </form>
+      </div>
     </div>
   );
 }; 
