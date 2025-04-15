@@ -1,16 +1,16 @@
-# Kryptografický Servis
+# Cryptographic Service
 
-## Architektura
+## Architecture
 
-### Komponenty
+### Components
 
 ```
-[Klient] -> [Frontend] -> [Kryptografický servis] -> [Backend]
+[Client] -> [Frontend] -> [Cryptographic Service] -> [Backend]
 ```
 
-## Implementace
+## Implementation
 
-### Základní šifrování
+### Basic Encryption
 
 ```python
 # src/services/crypto/base.py
@@ -55,7 +55,7 @@ class CryptoService:
         return decryptor.update(ciphertext) + decryptor.finalize()
 ```
 
-### End-to-End Šifrování
+### End-to-End Encryption
 
 ```python
 # src/services/crypto/e2e.py
@@ -155,7 +155,7 @@ class PFSCrypto:
 
 ## API Endpoints
 
-### Flask Aplikace
+### Flask Application
 
 ```python
 # src/api/crypto.py
@@ -202,7 +202,7 @@ def create_session():
     })
 ```
 
-## Bezpečnost
+## Security
 
 ### Rate Limiting
 
@@ -250,9 +250,9 @@ class AuditMiddleware:
         return response
 ```
 
-## Testování
+## Testing
 
-### Unit testy
+### Unit tests
 
 ```python
 # tests/crypto/test_encryption.py
@@ -304,7 +304,7 @@ class TestE2ECrypto(unittest.TestCase):
 
 ## Deployment
 
-### Docker Konfigurace
+### Docker Configuration
 
 ```dockerfile
 # Dockerfile
@@ -321,7 +321,7 @@ EXPOSE 5000
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.api.crypto:app"]
 ```
 
-### Gunicorn Konfigurace
+### Gunicorn Configuration
 
 ```python
 # gunicorn.conf.py

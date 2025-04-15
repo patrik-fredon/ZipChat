@@ -6,28 +6,28 @@ import cs from './locales/cs/translation.json';
 import en from './locales/en/translation.json';
 
 const resources = {
-    cs: {
-        translation: cs
-    },
-    en: {
-        translation: en
-    }
+	cs: {
+		translation: cs
+	},
+	en: {
+		translation: en
+	}
 };
 
 i18n
-    .use(LanguageDetector)
-    .use(initReactI18next)
-    .init({
-        resources,
-        fallbackLng: 'cs',
-        debug: process.env.NODE_ENV === 'development',
-        interpolation: {
-            escapeValue: false
-        },
-        detection: {
-            order: ['localStorage', 'navigator'],
-            caches: ['localStorage']
-        }
-    });
+	.use(LanguageDetector)
+	.use(initReactI18next)
+	.init({
+		resources,
+		fallbackLng: 'en',
+		debug: process.env.NODE_ENV === 'development',
+		interpolation: {
+			escapeValue: false
+		},
+		detection: {
+			order: ['localStorage', 'navigator'],
+			caches: ['localStorage']
+		}
+	});
 
-export default i18n; 
+export default i18n;

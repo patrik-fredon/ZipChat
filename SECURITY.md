@@ -1,34 +1,32 @@
-# Bezpečnostní politika ZipChat
+# ZipChat Security Policy
 
-## Hlášení bezpečnostních problémů
+## Reporting Security Issues
 
-Pokud objevíte bezpečnostní problém v ZipChat, prosím, nehlašujte ho veřejně. Místo toho kontaktujte náš bezpečnostní tým na security@zipchat.com.
+If you discover a security issue in ZipChat, please do not report it publicly. Instead, contact our security team at security@zipchat.com.
 
-## Proces hlášení
+## Reporting Process
 
-1. Popište problém co nejpodrobněji
-2. Uveďte kroky k reprodukci
-3. Přidejte relevantní logy nebo screenshoty
-4. Uveďte verzi ZipChat, ve které jste problém objevili
-5. Počkejte na odpověď bezpečnostního týmu
+1. Describe the issue in as much detail as possible
+2. Include steps to reproduce the issue
+3. Add relevant logs or screenshots
+4. Specify the ZipChat version where you discovered the issue
+5. Wait for the security team's response
 
-## Odpovědnost za bezpečnost
+## Security Responsibility
 
-- Všechny bezpečnostní problémy jsou brány vážně
-- Každý report bude prozkoumán
-- Budete informováni o postupu řešení
-- Opravy budou vydány v nejbližším možném termínu
+- All security issues are taken seriously
+- Every report will be investigated
+- You will be informed about the resolution progress
+- Fixes will be released as soon as possible
 
-## Bezpečnostní opatření
+## Security Measures
 
-- Pravidelné bezpečnostní audity
-- Automatické skenování zranitelností
-- Šifrování všech citlivých dat
-- Dvoufaktorová autentizace
-- Rate limiting pro API
-- Pravidelné aktualizace závislostí
+- Regular security audits
+- Automated vulnerability scanning
+- Encryption of all sensitive data
+- Two-factor authentication
+- Regular dependency updates
 
-## Kontakt
+## Contact
 
-Bezpečnostní tým: security@zipchat.com
-Odpověď obvykle do 48 hodin
+Security Team: security@zipchat.com

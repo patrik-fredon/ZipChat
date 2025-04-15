@@ -248,11 +248,41 @@ zipchat/
 
 ## 📚 Documentation
 
-- [API Documentation](docs/api.md)
-- [Architecture Overview](docs/architecture.md)
-- [Security Guidelines](docs/security.md)
-- [Deployment Guide](docs/deployment.md)
+### General Documentation
+
+- [Architecture Overview](docs/general/ARCHITECTURE.md)
+- [Frontend Documentation](docs/general/FRONTEND.md)
+- [Backend Documentation](docs/general/BACKEND.md)
+- [API Documentation](docs/general/api.md)
+- [Project Structure](docs/general/project-structure.md)
+- [Security Guidelines](docs/general/SECURITY.md)
+- [Cryptography Implementation](docs/general/CRYPTO.md)
+- [Database Design](docs/general/DATABASE.md)
+- [Monitoring System](docs/general/MONITORING.md)
+- [Infrastructure Setup](docs/general/INFRASTRUCTURE.md)
+
+### Optimization & Scaling
+
+- [Optimization Guide](docs/optimization/OPTIMIZATION.md)
+- [Scaling Strategy](docs/optimization/SCALING.md)
+- [Disaster Recovery](docs/optimization/DISASTER_RECOVERY.md)
+- [Deployment Guide](docs/optimization/DEPLOYMENT.md)
+- [Monitoring Plan](docs/optimization/MONITORING_PLAN.md)
+- [Security Plan](docs/optimization/SECURITY_PLAN.md)
+- [Testing Strategy](docs/optimization/TESTING.md)
+- [Migration Guide](docs/optimization/MIGRATION.md)
+
+### Finalization
+
+- [Finalization Checklist](docs/finalization/general.md)
+
+### Contributing
+
 - [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+- [Issue Template](ISSUE_TEMPLATE.md)
+- [Pull Request Template](PULL_REQUEST_TEMPLATE.md)
 
 ## 🤝 Contributing
 

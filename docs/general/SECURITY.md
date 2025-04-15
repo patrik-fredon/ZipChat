@@ -1,8 +1,8 @@
-# Bezpečnostní Implementace
+# Security Implementation
 
-## Kryptografické mechanismy
+## Cryptographic Mechanisms
 
-### End-to-End Šifrování
+### End-to-End Encryption
 
 ```typescript
 // src/lib/crypto/e2e.ts
@@ -84,9 +84,9 @@ export class PFS {
 }
 ```
 
-## Autentizace a Autorizace
+## Authentication and Authorization
 
-### JWT Implementace
+### JWT Implementation
 
 ```typescript
 // src/lib/auth/jwt.ts
@@ -135,7 +135,7 @@ export const rateLimit = async (req: Request, res: Response, next: NextFunction)
 
 ## Content Security Policy
 
-### CSP Konfigurace
+### CSP Configuration
 
 ```typescript
 // src/middleware/csp.ts
@@ -156,7 +156,7 @@ export const cspMiddleware = helmet.contentSecurityPolicy({
 });
 ```
 
-## Bezpečnostní hlavičky
+## Security Headers
 
 ### HTTP Headers
 
@@ -177,7 +177,7 @@ export const securityHeaders = [
 ];
 ```
 
-## Logování a Monitoring
+## Logging and Monitoring
 
 ### Audit Log
 
@@ -202,9 +202,9 @@ export class AuditLogger {
 }
 ```
 
-## Testování bezpečnosti
+## Security Testing
 
-### Penetrační testy
+### Penetration Tests
 
 ```typescript
 // tests/security/penetration.test.ts

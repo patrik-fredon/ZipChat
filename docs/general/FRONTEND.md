@@ -1,16 +1,16 @@
-# Frontend Implementace
+# Frontend Implementation
 
-## Technologie
+## Technologies
 
-- Next.js 14 s App Router
+- Next.js 14 with App Router
 - TypeScript
 - TailwindCSS
 - ShadcnUI
-- SWR pro data fetching
-- Zustand pro state management
-- Zod pro validaci
+- SWR for data fetching
+- Zustand for state management
+- Zod for validation
 
-## Struktura projektu
+## Project Structure
 
 ```
 src/
@@ -33,9 +33,9 @@ src/
 └── types/
 ```
 
-## Šifrovací vrstva
+## Encryption Layer
 
-### Implementace Web Crypto API
+### Web Crypto API Implementation
 
 ```typescript
 // src/lib/crypto/encryption.ts
@@ -73,9 +73,9 @@ export class EncryptionService {
 }
 ```
 
-## Komponenty
+## Components
 
-### Bezpečný formulář
+### Secure Form
 
 ```typescript
 // src/components/forms/SecureForm.tsx
@@ -99,7 +99,7 @@ export function SecureForm() {
 
 ## State Management
 
-### Šifrovací stav
+### Encryption State
 
 ```typescript
 // src/lib/store/encryption.ts
@@ -123,9 +123,9 @@ export const useEncryptionStore = create<EncryptionState>((set) => ({
 }));
 ```
 
-## API Integrace
+## API Integration
 
-### Zabezpečené volání API
+### Secure API Calls
 
 ```typescript
 // src/lib/api/client.ts
@@ -145,7 +145,7 @@ export const secureFetch = async (url: string, options: RequestInit) => {
 };
 ```
 
-## Bezpečnostní opatření
+## Security Measures
 
 1. **Content Security Policy**
 
@@ -184,9 +184,9 @@ export function middleware(request: NextRequest) {
 }
 ```
 
-## Testování
+## Testing
 
-### Unit testy
+### Unit Tests
 
 ```typescript
 // src/lib/crypto/__tests__/encryption.test.ts
@@ -205,7 +205,7 @@ describe('EncryptionService', () => {
 
 ## Deployment
 
-### Build konfigurace
+### Build Configuration
 
 ```typescript
 // next.config.js

@@ -1,31 +1,32 @@
-# Popis změn
+# Pull Request
 
-Stručný popis změn, které tento PR přináší.
+## Description
 
-## Typ změny
+Brief description of the changes this PR introduces.
 
-Označte typ změny, kterou tento PR představuje:
+## Type of Change
 
-- [ ] Oprava chyby (non-breaking change, které opravuje issue)
-- [ ] Nová funkce (non-breaking change, které přidává funkci)
-- [ ] Breaking change (oprava nebo funkce, které způsobí změnu v existujícím kódu)
-- [ ] Dokumentace
+Please mark the type of change this PR represents:
+
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to change)
 
 ## Checklist
 
-- [ ] Můj kód následuje styl kódu tohoto projektu
-- [ ] Provedl jsem self-review svých změn
-- [ ] Přidal jsem komentáře k mému kódu, zejména v těžko pochopitelných oblastech
-- [ ] Provedl jsem odpovídající změny v dokumentaci
-- [ ] Moje změny nevyvolávají nové varování
-- [ ] Přidal jsem testy, které dokazují, že moje oprava je efektivní nebo že moje funkce funguje
-- [ ] Nové a existující unit testy procházejí lokálně s mými změnami
-- [ ] Všechny testy procházejí
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my changes
+- [ ] I have added comments to my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published in downstream modules
 
-## Screenshoty
+## Screenshot
 
-Pokud je to možné, přidejte screenshoty před a po změnách.
+If possible, add screenshots before and after the changes.
 
-## Dodatečný kontext
+## Additional Context
 
-Přidejte jakýkoliv další kontext o PR zde.
+Add any additional context about the PR here.

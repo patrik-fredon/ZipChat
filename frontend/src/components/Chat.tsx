@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWebSocket } from '../hooks/useWebSocket';
 import '../styles/Chat.css';
 import { Message } from '../types/chat';
 
 export const Chat: React.FC = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -88,9 +90,9 @@ export const Chat: React.FC = () => {
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <h2>Chat</h2>
+        <h2>{t('chat.title')}</h2>
         <div className={`connection-status ${connectionStatus}`}>
-          {connectionStatus === 'connected' ? 'Připojeno' : 'Odpojeno'}
+          {connectionStatus === 'connected' ? t('chat.connected') : t('chat.disconnected')}
         </div>
       </div>
 
@@ -113,8 +115,8 @@ export const Chat: React.FC = () => {
       {typingUsers.length > 0 && (
         <div className="typing-indicator">
           {typingUsers.length === 1
-            ? 'Někdo píše...'
-            : `${typingUsers.length} lidé píší...`}
+            ? t('chat.typing')
+            : t('chat.multipleTyping', { count: typingUsers.length })}
         </div>
       )}
 
@@ -124,14 +126,14 @@ export const Chat: React.FC = () => {
           value={input}
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Napište zprávu..."
+          placeholder={t('chat.typeMessage')}
           disabled={connectionStatus === 'disconnected'}
         />
         <button
           onClick={handleSendMessage}
           disabled={!input.trim() || connectionStatus === 'disconnected'}
         >
-          Odeslat
+          {t('chat.send')}
         </button>
       </div>
     </div>

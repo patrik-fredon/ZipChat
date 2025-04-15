@@ -1,80 +1,86 @@
-Dobrý den! Prostuduji projekt ZipChat a provedu analýzu implementace podle dokumentace.
+# Project Analysis and Implementation Plan
 
-Nejprve se podívám na strukturu projektu a aktuální implementaci.
+## Project Structure Analysis
 
-Ran tool
-Podívám se na aktuální implementaci frontendu a backendu:
+Let me analyze the project structure and current implementation.
 
-Ran tool
+## Current Implementation Review
 
-Ran tool
-Na základě analýzy projektu a dokumentace ZipChat, navrhuji následující úpravy pro správnou implementaci:
+Let's examine the current frontend and backend implementation:
 
-1. Frontend:
+## Implementation Plan
 
-- Přidat podporu pro WebSocket pro real-time komunikaci
-- Implementovat šifrování zpráv na straně klienta
-- Přidat podporu pro více jazyků (i18n)
-- Vylepšit UI/UX podle design systému ZipChat
+Based on the project analysis and ZipChat documentation, I propose the following adjustments for proper implementation:
 
-2. Backend:
+### Frontend:
 
-- Implementovat WebSocket server pro real-time komunikaci
-- Přidat podporu pro šifrování zpráv
-- Implementovat správu uživatelů a autentizaci
-- Přidat podporu pro ukládání zpráv do databáze
+- Implement client-side message encryption
+- Add support for multiple languages (i18n)
+- Improve UI/UX according to ZipChat design system
+- Add responsive design support
+- Implement real-time updates
 
-3. Bezpečnost:
+### Backend:
 
-- Implementovat end-to-end šifrování
-- Přidat podporu pro 2FA
-- Implementovat rate limiting
-- Přidat podporu pro audit logy
+- Add message encryption support
+- Implement user management and authentication
+- Add support for message storage in database
+- Implement rate limiting
+- Add API documentation
 
-4. Monitoring:
+### Security:
 
-- Přidat podporu pro metriky a monitoring
-- Implementovat logování
-- Přidat podporu pro alerting
+- Implement end-to-end encryption
+- Add two-factor authentication
+- Implement secure session management
+- Add input validation
+- Implement security headers
 
-5. Testování:
+### Performance:
 
-- Přidat unit testy
-- Přidat integrační testy
-- Přidat e2e testy
-- Přidat load testy
+- Implement caching
+- Add database indexing
+- Optimize queries
+- Implement logging
 
-6. Dokumentace:
+### Testing:
 
-- Aktualizovat README.md
-- Přidat API dokumentaci
-- Přidat dokumentaci pro vývojáře
-- Přidat dokumentaci pro uživatele
+- Add unit tests
+- Add integration tests
+- Add performance tests
+- Add security tests
 
-7. CI/CD:
+### Documentation:
 
-- Přidat podporu pro automatické testování
-- Přidat podporu pro automatické nasazování
-- Přidat podporu pro code review
-- Přidat podporu pro automatické formátování kódu
+- Add developer documentation
+- Add user documentation
+- Add API documentation
+- Add deployment documentation
 
-8. Docker:
+### CI/CD:
 
-- Aktualizovat Dockerfile
-- Přidat podporu pro Docker Compose
-- Přidat podporu pro Kubernetes
+- Add support for automated testing
+- Add support for automated deployment
+- Add support for automated code review
+- Add support for automated code formatting
 
-9. Changelog:
+### Monitoring:
 
-- Aktualizovat CHANGELOG.md
-- Přidat podporu pro automatické generování changelogu
-- Přidat podporu pro semantické verzování
+- Add error tracking
+- Add performance monitoring
+- Add user analytics
+- Add automated changelog generation
+- Add semantic versioning support
 
-10. Kód:
+### Code:
 
-- Přidat podporu pro TypeScript
-- Přidat podporu pro ESLint
-- Přidat podporu pro Prettier
-- Přidat podporu pro Husky
+- Follow coding standards
+- Add code comments
+- Use consistent naming conventions
+- Implement proper error handling
+- Add input validation
+- Use proper logging
+- Implement proper testing
+- Follow security best practices
 
-Tyto úpravy zajistí, že projekt bude správně implementován podle dokumentace ZipChat a bude splňovat všechny požadavky na bezpečnost, výkon a uživatelskou přívětivost.
+These adjustments will ensure that the project is properly implemented according to the ZipChat documentation and meets all requirements for security, performance, and user-friendliness.

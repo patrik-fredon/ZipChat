@@ -1,37 +1,37 @@
-# ZipChat - Bezpečná komunikační platforma
+# ZipChat - Secure Communication Platform
 
-## Obsah
+## Table of Contents
 
-1. [Architektura systému](#architektura-systému)
-2. [Frontend implementace](#frontend-implementace)
-3. [Backend implementace](#backend-implementace)
-4. [Databázová vrstva](#databázová-vrstva)
-5. [Bezpečnostní implementace](#bezpečnostní-implementace)
-6. [Infrastruktura](#infrastruktura)
-7. [Monitoring a logging](#monitoring-a-logging)
+1. [System Architecture](#system-architecture)
+2. [Frontend Implementation](#frontend-implementation)
+3. [Backend Implementation](#backend-implementation)
+4. [Database Layer](#database-layer)
+5. [Security Implementation](#security-implementation)
+6. [Infrastructure](#infrastructure)
+7. [Monitoring and Logging](#monitoring-and-logging)
 
-## Architektura systému
+## System Architecture
 
-### Vysokoúrovňový přehled
+### High-Level Overview
 
-Systém je navržen jako mikroservisní architektura s následujícími hlavními komponentami:
+The system is designed as a microservice architecture with the following main components:
 
 - Frontend (Next.js)
 - Backend API (Node.js)
-- Kryptografický servis (Python/Flask)
-- Databázové vrstvy (PostgreSQL, MongoDB)
-- Infrastrukturní vrstva (Nginx, Coolify)
+- Cryptographic Service (Python/Flask)
+- Database Layers (PostgreSQL, MongoDB)
+- Infrastructure Layer (Nginx, Coolify)
 
-### Komunikační toky
+### Communication Flows
 
-1. Klient -> Nginx (HTTPS)
+1. Client -> Nginx (HTTPS)
 2. Nginx -> Frontend/Backend
-3. Backend -> Kryptografický servis
-4. Backend -> Databáze
+3. Backend -> Cryptographic Service
+4. Backend -> Database
 
-### Bezpečnostní vrstvy
+### Security Layers
 
-- Transportní šifrování (TLS 1.3)
-- End-to-end šifrování (AES-256-GCM)
-- Zero-knowledge architektura
+- Transport Encryption (TLS 1.3)
+- End-to-end Encryption (AES-256-GCM)
+- Zero-knowledge Architecture
 - Perfect Forward Secrecy

@@ -1,8 +1,8 @@
-# Databázová Vrstva
+# Database Layer
 
-## Architektura
+## Architecture
 
-### Komponenty
+### Components
 
 ```
 [PostgreSQL] <- [Backend API]
@@ -18,7 +18,7 @@
 -- src/models/schema.sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Uživatelé
+-- Users
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT true
 );
 
--- Zprávy
+-- Messages
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     sender_id UUID REFERENCES users(id),
@@ -43,7 +43,7 @@ CREATE TABLE messages (
     is_deleted BOOLEAN DEFAULT false
 );
 
--- Šifrovací klíče
+-- Encryption Keys
 CREATE TABLE encryption_keys (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id),
@@ -54,14 +54,14 @@ CREATE TABLE encryption_keys (
     is_active BOOLEAN DEFAULT true
 );
 
--- Indexy
+-- Indexes
 CREATE INDEX idx_messages_sender ON messages(sender_id);
 CREATE INDEX idx_messages_recipient ON messages(recipient_id);
 CREATE INDEX idx_messages_created ON messages(created_at);
 CREATE INDEX idx_encryption_keys_user ON encryption_keys(user_id);
 ```
 
-### Migrace
+### Migrations
 
 ```typescript
 // src/database/migrations/001_initial.ts
@@ -97,7 +97,7 @@ export class InitialMigration implements MigrationInterface {
 // src/models/mongodb.ts
 import { Schema } from 'mongoose';
 
-// Audit logy
+// Audit logs
 const AuditLogSchema = new Schema({
 	timestamp: { type: Date, default: Date.now },
 	userId: { type: String, required: false },
@@ -108,7 +108,7 @@ const AuditLogSchema = new Schema({
 	metadata: { type: Schema.Types.Mixed }
 });
 
-// Metriky
+// Metrics
 const MetricSchema = new Schema({
 	timestamp: { type: Date, default: Date.now },
 	name: { type: String, required: true },
@@ -133,7 +133,7 @@ export const models = {
 
 ## Redis
 
-### Konfigurace
+### Configuration
 
 ```typescript
 // src/lib/redis/config.ts
@@ -172,7 +172,7 @@ export const cacheStore = new Redis({
 ```typescript
 // src/lib/redis/cache.ts
 export class Cache {
-	private static readonly DEFAULT_TTL = 3600; // 1 hodina
+	private static readonly DEFAULT_TTL = 3600; // 1 hour
 
 	public static async get<T>(key: string): Promise<T | null> {
 		const data = await cacheStore.get(key);
@@ -189,9 +189,9 @@ export class Cache {
 }
 ```
 
-## Bezpečnost
+## Security
 
-### Šifrování dat
+### Data Encryption
 
 ```typescript
 // src/lib/database/encryption.ts
@@ -219,7 +219,7 @@ export class DatabaseEncryption {
 }
 ```
 
-### Backup a Recovery
+### Backup and Recovery
 
 ```typescript
 // src/lib/database/backup.ts
@@ -260,15 +260,15 @@ export class DatabaseBackup {
 
 ## Performance
 
-### Indexy a optimalizace
+### Indexes and Optimization
 
 ```sql
 -- src/models/indexes.sql
--- Optimalizace dotazů
+-- Optimization queries
 CREATE INDEX idx_messages_composite ON messages(sender_id, recipient_id, created_at);
 CREATE INDEX idx_users_composite ON users(username, email, is_active);
 
--- Čištění starých zpráv
+-- Cleaning old messages
 CREATE FUNCTION cleanup_old_messages() RETURNS void AS $$
 BEGIN
   DELETE FROM messages
@@ -277,7 +277,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Plánované spouštění
+-- Scheduled execution
 SELECT cron.schedule('0 0 * * *', 'SELECT cleanup_old_messages()');
 ```
 

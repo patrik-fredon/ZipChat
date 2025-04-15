@@ -1,19 +1,19 @@
-# Monitoring a Logging
+# Monitoring and Logging
 
-## Architektura monitoringu
+## Monitoring Architecture
 
-### Komponenty
+### Components
 
 ```
 [Prometheus] -> [Grafana] -> [Alertmanager]
      ^
      |
-[Exportéři] <- [Aplikace]
+[Exporters] <- [Application]
 ```
 
-## Prometheus Konfigurace
+## Prometheus Configuration
 
-### Hlavní konfigurace
+### Main Configuration
 
 ```yaml
 # prometheus.yml
@@ -52,7 +52,7 @@ scrape_configs:
       - targets: ['backend:3001', 'frontend:3000']
 ```
 
-### Pravidla pro alerty
+### Alert Rules
 
 ```yaml
 # alert_rules.yml
@@ -78,7 +78,7 @@ groups:
           description: 'Memory usage is above 90% for 5 minutes'
 ```
 
-## Grafana Dashboardy
+## Grafana Dashboards
 
 ### System Metrics
 
@@ -151,7 +151,7 @@ groups:
 
 ## Logging
 
-### Strukturované logy
+### Structured Logs
 
 ```typescript
 // src/lib/logger/structured.ts
@@ -223,7 +223,7 @@ export class AuditLogger {
 
 ## Alerting
 
-### Alertmanager Konfigurace
+### Alertmanager Configuration
 
 ```yaml
 # alertmanager.yml
@@ -250,80 +250,108 @@ receivers:
 ```yaml
 # alert_templates.yml
 templates:
-  - '*.tmpl'
+  - 'alert_templates/*.tmpl'
 
 templates:
-  - |
-    {{ define "slack.default.title" }}
-    [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
-    {{ end }}
+  - name: default
+    template: |
+      {{ define "slack.default.title" }}
+        [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+      {{ end }}
 
-    {{ define "slack.default.text" }}
-    {{ range .Alerts }}
-    *Alert:* {{ .Annotations.summary }}
-    *Description:* {{ .Annotations.description }}
-    *Details:*
-    {{ range .Labels.SortedPairs }}• *{{ .Name }}:* `{{ .Value }}`
-    {{ end }}
-    {{ end }}
-    {{ end }}
+      {{ define "slack.default.text" }}
+        {{ range .Alerts }}
+          *Alert:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Details:*
+          {{ range .Labels.SortedPairs }}
+            • {{ .Name }}: {{ .Value }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
 ```
 
 ## Performance Monitoring
 
-### Application Metrics
+### Metrics Collection
 
 ```typescript
-// src/lib/metrics/app.ts
-import { Counter, Histogram } from 'prom-client';
+// src/lib/metrics/collector.ts
+import { Counter, Gauge, Histogram } from 'prom-client';
 
-export const httpRequestsTotal = new Counter({
-	name: 'http_requests_total',
-	help: 'Total number of HTTP requests',
-	labelNames: ['method', 'path', 'status']
-});
+export const metrics = {
+	requests: new Counter({
+		name: 'http_requests_total',
+		help: 'Total number of HTTP requests',
+		labelNames: ['method', 'path', 'status']
+	}),
 
-export const httpRequestDuration = new Histogram({
-	name: 'http_request_duration_seconds',
-	help: 'HTTP request duration in seconds',
-	labelNames: ['method', 'path'],
-	buckets: [0.1, 0.5, 1, 2, 5]
-});
+	responseTime: new Histogram({
+		name: 'http_response_time_seconds',
+		help: 'HTTP response time in seconds',
+		labelNames: ['method', 'path']
+	}),
 
-export const databaseQueriesTotal = new Counter({
-	name: 'database_queries_total',
-	help: 'Total number of database queries',
-	labelNames: ['operation', 'table']
-});
+	activeUsers: new Gauge({
+		name: 'active_users',
+		help: 'Number of active users'
+	})
+};
 ```
 
-### Middleware pro metriky
+### Health Checks
 
 ```typescript
-// src/middleware/metrics.ts
-import { httpRequestsTotal, httpRequestDuration } from '../lib/metrics/app';
+// src/lib/health/checks.ts
+export class HealthChecker {
+	public static async checkDatabase(): Promise<HealthStatus> {
+		try {
+			await db.query('SELECT 1');
+			return { status: 'healthy' };
+		} catch (error) {
+			return { status: 'unhealthy', error: error.message };
+		}
+	}
 
-export const metricsMiddleware = (req: Request, res: Response, next: NextFunction) => {
-	const start = Date.now();
+	public static async checkRedis(): Promise<HealthStatus> {
+		try {
+			await redis.ping();
+			return { status: 'healthy' };
+		} catch (error) {
+			return { status: 'unhealthy', error: error.message };
+		}
+	}
+}
+```
 
-	res.on('finish', () => {
-		const duration = (Date.now() - start) / 1000;
+## Log Analysis
 
-		httpRequestsTotal.inc({
-			method: req.method,
-			path: req.path,
-			status: res.statusCode
-		});
+### Log Aggregation
 
-		httpRequestDuration.observe(
-			{
-				method: req.method,
-				path: req.path
-			},
-			duration
-		);
-	});
+```typescript
+// src/lib/logs/aggregator.ts
+export class LogAggregator {
+	public static async aggregateLogs(query: LogQuery): Promise<LogAggregation> {
+		const logs = await this.fetchLogs(query);
+		return {
+			total: logs.length,
+			byLevel: this.groupByLevel(logs),
+			byService: this.groupByService(logs),
+			errors: this.filterErrors(logs)
+		};
+	}
+}
+```
 
-	next();
-};
+### Error Tracking
+
+```typescript
+// src/lib/logs/error-tracker.ts
+export class ErrorTracker {
+	public static async trackError(error: Error, context: ErrorContext): Promise<void> {
+		await this.sendToSentry(error, context);
+		await this.notifyTeam(error, context);
+		await this.logError(error, context);
+	}
+}
 ```
