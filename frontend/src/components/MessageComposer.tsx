@@ -1,141 +1,185 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { useTypingIndicator } from '../hooks/useTypingIndicator';
+import { IMessage } from '../types/message';
 import { EmojiPicker } from './EmojiPicker';
 import { FilePreview } from './FilePreview';
 
 interface MessageComposerProps {
+  onSendMessage: (message: IMessage) => void;
   currentUserId: string;
   recipientId: string;
-  onSendMessage: (content: string, attachments?: File[]) => void;
+  isTyping: boolean;
+  onTyping: (isTyping: boolean) => void;
 }
 
 export const MessageComposer: React.FC<MessageComposerProps> = ({
+  onSendMessage,
   currentUserId,
   recipientId,
-  onSendMessage
+  isTyping,
+  onTyping,
 }) => {
   const [content, setContent] = useState('');
-  const [attachments, setAttachments] = useState<File[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [expiration, setExpiration] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Ukládání konceptu zprávy
-  const [draft, setDraft] = useLocalStorage(`message_draft_${recipientId}`, '');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!content.trim() && files.length === 0) return;
 
-  // Indikátor psaní
-  const { isTyping, handleTyping } = useTypingIndicator(currentUserId, recipientId);
+    setIsSending(true);
+    setError(null);
 
-  // Automatické zvětšování textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    try {
+      const message: IMessage = {
+        id: Date.now().toString(),
+        content,
+        senderId: currentUserId,
+        recipientId,
+        timestamp: new Date().toISOString(),
+        status: 'sending',
+        files: files.map(file => ({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+        })),
+        expiresAt: expiration ? new Date(expiration).toISOString() : undefined,
+      };
+
+      await onSendMessage(message);
+      setContent('');
+      setFiles([]);
+      setExpiration('');
+      setShowEmojiPicker(false);
+    } catch (err) {
+      setError('Nepodařilo se odeslat zprávu');
+    } finally {
+      setIsSending(false);
     }
-  }, [content]);
-
-  // Načtení konceptu při změně příjemce
-  useEffect(() => {
-    setContent(draft);
-  }, [recipientId, draft]);
-
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newContent = e.target.value;
-    setContent(newContent);
-    setDraft(newContent);
-    handleTyping(newContent.length > 0);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      setAttachments(prev => [...prev, ...newFiles]);
+      setFiles([...files, ...Array.from(e.target.files)]);
     }
   };
 
-  const handleRemoveAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+  const handleRemoveFile = (index: number) => {
+    setFiles(files.filter((_, i) => i !== index));
   };
 
-  const handleEmojiSelect = (emoji: string) => {
-    setContent(prev => prev + emoji);
-    setDraft(prev => prev + emoji);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (content.trim() || attachments.length > 0) {
-      onSendMessage(content, attachments);
-      setContent('');
-      setDraft('');
-      setAttachments([]);
-      handleTyping(false);
+  useEffect(() => {
+    if (content.trim()) {
+      onTyping(true);
+      const timer = setTimeout(() => onTyping(false), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      onTyping(false);
     }
-  };
+  }, [content, onTyping]);
 
   return (
-    <form onSubmit={handleSubmit} className="border-t p-4 space-y-4">
-      {attachments.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {attachments.map((file, index) => (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {files.length > 0 && (
+        <div className="space-y-2">
+          {files.map((file, index) => (
             <FilePreview
               key={index}
               file={file}
-              onRemove={() => handleRemoveAttachment(index)}
+              onRemove={() => handleRemoveFile(index)}
             />
           ))}
         </div>
       )}
 
       <div className="flex items-end space-x-2">
-        <button
-          type="button"
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="p-2 text-gray-500 hover:text-gray-700"
-        >
-          😊
-        </button>
+        <div className="flex-1">
+          <textarea
+            ref={inputRef}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Napište zprávu..."
+            className="input min-h-[80px] max-h-[200px] resize-y"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+          />
+        </div>
 
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-gray-500 hover:text-gray-700"
-        >
-          📎
-        </button>
+        <div className="flex space-x-2">
+          <button
+            type="button"
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className="btn btn-outlined"
+            aria-label="Vložit emoji"
+          >
+            😊
+          </button>
 
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={handleContentChange}
-          placeholder="Napište zprávu..."
-          className="flex-1 min-h-[40px] max-h-[200px] p-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows={1}
-        />
+          <input
+            type="file"
+            id="file-upload"
+            onChange={handleFileSelect}
+            multiple
+            className="hidden"
+            aria-label="Přidat přílohu"
+          />
+          <label
+            htmlFor="file-upload"
+            className="btn btn-outlined cursor-pointer"
+          >
+            📎
+          </label>
 
-        <button
-          type="submit"
-          disabled={!content.trim() && attachments.length === 0}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Odeslat
-        </button>
+          <button
+            type="submit"
+            disabled={isSending || (!content.trim() && files.length === 0)}
+            className="btn btn-primary"
+          >
+            {isSending ? 'Odesílám...' : 'Odeslat'}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <div className="flex-1">
+          <input
+            type="datetime-local"
+            value={expiration}
+            onChange={(e) => setExpiration(e.target.value)}
+            min={new Date().toISOString().slice(0, 16)}
+            className="input"
+            placeholder="Platnost zprávy (volitelné)"
+          />
+        </div>
       </div>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-16 left-4">
-          <EmojiPicker onSelect={handleEmojiSelect} />
+        <EmojiPicker
+          onSelect={(emoji) => {
+            setContent(content + emoji);
+            setShowEmojiPicker(false);
+            inputRef.current?.focus();
+          }}
+          onClose={() => setShowEmojiPicker(false)}
+        />
+      )}
+
+      {error && (
+        <div className="notification notification-error" role="alert">
+          {error}
         </div>
       )}
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        multiple
-        onChange={handleFileSelect}
-        className="hidden"
-      />
+      {isTyping && (
+        <div className="text-sm text-gray-500">Píše...</div>
+      )}
     </form>
   );
 }; 

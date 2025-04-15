@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "Načítání...",
+    "error": "Došlo k chybě",
+    "success": "Úspěch",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "back": "Zpět"
+  },
+  "auth": {
+    "login": "Přihlásit se",
+    "logout": "Odhlásit se",
+    "register": "Registrovat se",
+    "email": "Email",
+    "password": "Heslo",
+    "forgotPassword": "Zapomenuté heslo",
+    "resetPassword": "Obnovit heslo"
+  },
+  "chat": {
+    "newMessage": "Nová zpráva",
+    "typeMessage": "Napište zprávu...",
+    "send": "Odeslat",
+    "attachments": "Přílohy",
+    "emoji": "Emoji",
+    "typing": "Píše...",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Naposledy viděn",
+    "messageExpired": "Zpráva vypršela",
+    "encrypting": "Šifruji...",
+    "decrypting": "Dešifruji..."
+  },
+  "settings": {
+    "title": "Nastavení",
+    "language": "Jazyk",
+    "notifications": "Notifikace",
+    "privacy": "Soukromí",
+    "security": "Zabezpečení",
+    "theme": "Téma"
+  },
+  "errors": {
+    "required": "Toto pole je povinné",
+    "invalidEmail": "Neplatný email",
+    "passwordTooShort": "Heslo je příliš krátké",
+    "passwordsDontMatch": "Hesla se neshodují",
+    "networkError": "Chyba připojení",
+    "serverError": "Chyba serveru",
+    "unauthorized": "Neautorizovaný přístup"
+  }
+} 

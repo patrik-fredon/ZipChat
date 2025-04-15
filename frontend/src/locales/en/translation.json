@@ -1,0 +1,52 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password",
+    "resetPassword": "Reset password"
+  },
+  "chat": {
+    "newMessage": "New message",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "attachments": "Attachments",
+    "emoji": "Emoji",
+    "typing": "Typing...",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen",
+    "messageExpired": "Message expired",
+    "encrypting": "Encrypting...",
+    "decrypting": "Decrypting..."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "security": "Security",
+    "theme": "Theme"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "passwordTooShort": "Password is too short",
+    "passwordsDontMatch": "Passwords don't match",
+    "networkError": "Network error",
+    "serverError": "Server error",
+    "unauthorized": "Unauthorized access"
+  }
+} 

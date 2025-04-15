@@ -12,79 +12,63 @@ interface ChatWindowProps {
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ recipientId, currentUserId }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const lastMessageRef = useRef<HTMLDivElement>(null);
-
-  const {
-    messages,
-    sendMessage,
-    markAsRead,
-    loadMoreMessages,
-    hasMoreMessages
-  } = useMessages(currentUserId, recipientId);
-
-  const {
-    isConnected,
-    recipientStatus
-  } = useWebSocket({
-    currentUserId,
-    recipientId,
-    onNewMessage: (message) => {
-      if (message.senderId === recipientId) {
-        markAsRead([message.id]);
-      }
-    }
-  });
+  const { messages, sendMessage, loadMoreMessages } = useMessages(recipientId);
+  const { isConnected, subscribe, unsubscribe } = useWebSocket();
+  const [recipientStatus, setRecipientStatus] = useState<{
+    isOnline: boolean;
+    lastSeen: string;
+  } | null>(null);
 
   useEffect(() => {
-    const loadInitialMessages = async () => {
-      try {
-        await loadMoreMessages();
-        setIsLoading(false);
-      } catch (err) {
-        setError('Nepodařilo se načíst zprávy. Zkuste to prosím později.');
-        setIsLoading(false);
-      }
+    if (isConnected) {
+      subscribe('typing', (data) => {
+        if (data.userId === recipientId) {
+          setIsTyping(data.isTyping);
+        }
+      });
+
+      subscribe('status', (data) => {
+        if (data.userId === recipientId) {
+          setRecipientStatus({
+            isOnline: data.isOnline,
+            lastSeen: data.lastSeen,
+          });
+        }
+      });
+    }
+
+    return () => {
+      unsubscribe('typing');
+      unsubscribe('status');
     };
+  }, [isConnected, recipientId, subscribe, unsubscribe]);
 
-    loadInitialMessages();
-  }, [recipientId]);
-
-  useEffect(() => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (message: any) => {
     try {
-      await sendMessage(content);
-    } catch (err) {
-      setError('Nepodařilo se odeslat zprávu. Zkuste to prosím později.');
+      await sendMessage(message);
+      setIsTyping(false);
+    } catch (error) {
+      console.error('Chyba při odesílání zprávy:', error);
     }
   };
 
   const handleLoadMore = async () => {
-    if (!hasMoreMessages || isLoading) return;
+    if (isLoading || !hasMoreMessages) return;
 
     setIsLoading(true);
     try {
-      await loadMoreMessages();
-    } catch (err) {
-      setError('Nepodařilo se načíst další zprávy. Zkuste to prosím později.');
+      const newMessages = await loadMoreMessages();
+      setHasMoreMessages(newMessages.length > 0);
+    } catch (error) {
+      console.error('Chyba při načítání zpráv:', error);
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-red-500">{error}</div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
@@ -118,8 +102,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ recipientId, currentUser
       <div className="p-4 border-t border-gray-200">
         <MessageComposer
           onSendMessage={handleSendMessage}
-          disabled={!isConnected}
-          placeholder={isConnected ? 'Napište zprávu...' : 'Připojování...'}
+          currentUserId={currentUserId}
+          recipientId={recipientId}
+          isTyping={isTyping}
+          onTyping={setIsTyping}
         />
       </div>
     </div>

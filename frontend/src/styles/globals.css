@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-main: #2563EB;
+  --primary-light: #60A5FA;
+  --primary-dark: #1D4ED8;
+  --secondary-main: #10B981;
+  --secondary-light: #34D399;
+  --secondary-dark: #059669;
+  --background-default: #F9FAFB;
+  --background-paper: #FFFFFF;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-disabled: #9CA3AF;
+  --error-main: #EF4444;
+  --error-light: #FCA5A5;
+  --error-dark: #DC2626;
+  --success-main: #10B981;
+  --success-light: #34D399;
+  --success-dark: #059669;
+  --warning-main: #F59E0B;
+  --warning-light: #FBBF24;
+  --warning-dark: #D97706;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-default);
+  color: var(--text-primary);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Tlačítka */
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.btn-primary {
+  @apply bg-primary-main text-white hover:bg-primary-dark;
+}
+
+.btn-secondary {
+  @apply bg-secondary-main text-white hover:bg-secondary-dark;
+}
+
+.btn-outlined {
+  @apply border border-primary-main text-primary-main hover:bg-primary-light hover:text-white;
+}
+
+/* Formulářové prvky */
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-main focus:border-transparent;
+}
+
+.input-error {
+  @apply border-error-main focus:ring-error-main;
+}
+
+/* Karty */
+.card {
+  @apply bg-white rounded-lg shadow-md p-4;
+}
+
+/* Zprávy */
+.message {
+  @apply max-w-[70%] rounded-lg p-3;
+}
+
+.message-own {
+  @apply bg-primary-main text-white rounded-br-none;
+}
+
+.message-other {
+  @apply bg-gray-200 text-gray-800 rounded-bl-none;
+}
+
+/* Notifikace */
+.notification {
+  @apply fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50;
+}
+
+.notification-success {
+  @apply bg-success-main text-white;
+}
+
+.notification-error {
+  @apply bg-error-main text-white;
+}
+
+.notification-warning {
+  @apply bg-warning-main text-white;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary-main;
+}
+
+/* Responsivní design */
+@media (max-width: 640px) {
+  .message {
+    @apply max-w-[85%];
+  }
+}
+
+/* Animace */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+} 
