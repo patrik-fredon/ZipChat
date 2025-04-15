@@ -1,4 +1,5 @@
 import { Message } from '../types';
+import { EncryptionService } from './encryption.service';
 
 interface WebSocketConfig {
 	url: string;
@@ -14,8 +15,11 @@ export class WebSocketService {
 	private reconnectAttempts = 0;
 	private maxReconnectAttempts = 5;
 	private reconnectTimeout = 1000;
+	private encryptionService: EncryptionService;
 
-	private constructor() {}
+	private constructor() {
+		this.encryptionService = new EncryptionService();
+	}
 
 	public static getInstance(): WebSocketService {
 		if (!WebSocketService.instance) {
@@ -24,7 +28,7 @@ export class WebSocketService {
 		return WebSocketService.instance;
 	}
 
-	public connect(config: WebSocketConfig): void {
+	public async connect(config: WebSocketConfig): Promise<void> {
 		this.config = config;
 		this.socket = new WebSocket(config.url);
 
@@ -33,12 +37,14 @@ export class WebSocketService {
 			this.reconnectAttempts = 0;
 		};
 
-		this.socket.onmessage = (event) => {
+		this.socket.onmessage = async (event) => {
 			try {
-				const message = JSON.parse(event.data) as Message;
-				config.onMessage(message);
+				const encryptedMessage = JSON.parse(event.data);
+				const decryptedMessage = await this.encryptionService.decryptMessage(encryptedMessage);
+				config.onMessage(decryptedMessage);
 			} catch (error) {
 				console.error('Chyba při zpracování zprávy:', error);
+				config.onError(new Error('Chyba při zpracování zprávy'));
 			}
 		};
 
@@ -61,11 +67,17 @@ export class WebSocketService {
 		}
 	}
 
-	public sendMessage(message: Message): void {
+	public async sendMessage(message: Message): Promise<void> {
 		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send(JSON.stringify(message));
+			try {
+				const encryptedMessage = await this.encryptionService.encryptMessage(message);
+				this.socket.send(JSON.stringify(encryptedMessage));
+			} catch (error) {
+				console.error('Chyba při šifrování zprávy:', error);
+				throw new Error('Chyba při odesílání zprávy');
+			}
 		} else {
-			console.error('WebSocket není připojeno');
+			throw new Error('WebSocket není připojeno');
 		}
 	}
 
@@ -76,7 +88,7 @@ export class WebSocketService {
 			
 			setTimeout(() => {
 				this.connect(this.config!);
-			}, this.reconnectTimeout * this.reconnectAttempts);
+			}, this.reconnectTimeout * Math.pow(2, this.reconnectAttempts));
 		} else {
 			console.error('Maximální počet pokusů o opětovné připojení dosažen');
 		}

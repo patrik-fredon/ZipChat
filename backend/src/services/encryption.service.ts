@@ -1,11 +1,20 @@
-import crypto from 'crypto';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { z } from 'zod';
 import { IKey, Key } from '../models/key.model';
+import { logger } from '../utils/logger';
 
 export class EncryptionService {
+	private readonly algorithm = 'aes-256-gcm';
+	private readonly key: Buffer;
 	private static readonly ALGORITHM = 'aes-256-gcm';
 	private static readonly IV_LENGTH = 12;
 	private static readonly AUTH_TAG_LENGTH = 16;
+
+	constructor() {
+		// Zde by měl být kód pro získání šifrovacího klíče
+		// Například z konfigurace nebo z databáze
+		this.key = randomBytes(32);
+	}
 
 	/**
 	 * Encrypts a message using the recipient's public key
@@ -39,10 +48,10 @@ export class EncryptionService {
 		}
 
 		// Generate random IV
-		const iv = crypto.randomBytes(this.IV_LENGTH);
+		const iv = randomBytes(this.IV_LENGTH);
 
 		// Create cipher
-		const cipher = crypto.createCipheriv(this.ALGORITHM, Buffer.from(recipientKey.publicKey, 'base64'), iv);
+		const cipher = createCipheriv(this.ALGORITHM, Buffer.from(recipientKey.publicKey, 'base64'), iv);
 
 		// Encrypt message
 		let encrypted = cipher.update(message, 'utf8', 'base64');
@@ -86,7 +95,7 @@ export class EncryptionService {
 		}
 
 		// Create decipher
-		const decipher = crypto.createDecipheriv(this.ALGORITHM, Buffer.from(recipientKey.privateKey, 'base64'), Buffer.from(iv, 'base64'));
+		const decipher = createDecipheriv(this.ALGORITHM, Buffer.from(recipientKey.privateKey, 'base64'), Buffer.from(iv, 'base64'));
 
 		// Set authentication tag
 		decipher.setAuthTag(Buffer.from(authTag, 'base64'));
@@ -135,5 +144,49 @@ export class EncryptionService {
 		await Key.deactivateOldKeys(userId, newKey.id);
 
 		return newKey;
+	}
+
+	public async encryptMessage(message: any): Promise<string> {
+		try {
+			const iv = randomBytes(12);
+			const cipher = createCipheriv(this.algorithm, this.key, iv);
+
+			let encrypted = cipher.update(JSON.stringify(message), 'utf8', 'base64');
+			encrypted += cipher.final('base64');
+
+			const authTag = cipher.getAuthTag();
+
+			const result = {
+				iv: iv.toString('base64'),
+				encrypted,
+				authTag: authTag.toString('base64')
+			};
+
+			return JSON.stringify(result);
+		} catch (error) {
+			logger.error('Chyba při šifrování zprávy:', error);
+			throw new Error('Nepodařilo se zašifrovat zprávu');
+		}
+	}
+
+	public async decryptMessage(encryptedMessage: string): Promise<any> {
+		try {
+			const { iv, encrypted, authTag } = JSON.parse(encryptedMessage);
+			const decipher = createDecipheriv(
+				this.algorithm,
+				this.key,
+				Buffer.from(iv, 'base64')
+			);
+
+			decipher.setAuthTag(Buffer.from(authTag, 'base64'));
+
+			let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+			decrypted += decipher.final('utf8');
+
+			return JSON.parse(decrypted);
+		} catch (error) {
+			logger.error('Chyba při dešifrování zprávy:', error);
+			throw new Error('Nepodařilo se dešifrovat zprávu');
+		}
 	}
 }
