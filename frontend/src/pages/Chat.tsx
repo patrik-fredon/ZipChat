@@ -3,18 +3,49 @@ import { ChatList } from '../components/ChatList'
 import { ChatWindow } from '../components/ChatWindow'
 import { MessageInput } from '../components/MessageInput'
 import { useAuth } from '../hooks/useAuth'
+import { useWebSocket } from '../hooks/useWebSocket'
 
 export function Chat() {
   const { user } = useAuth()
   const [selectedChat, setSelectedChat] = useState<string | null>(null)
   const [messages, setMessages] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const { onMessage, onConnected, onDisconnected, onError } = useWebSocket(
+    `${process.env.REACT_APP_WS_URL}/user/${user?.id}`
+  )
 
   useEffect(() => {
     if (selectedChat) {
       loadMessages(selectedChat)
     }
   }, [selectedChat])
+
+  useEffect(() => {
+    const unsubscribeMessage = onMessage((message) => {
+      if (message.type === 'new_message' && message.payload.chatId === selectedChat) {
+        setMessages((prev) => [...prev, message.payload])
+      }
+    })
+
+    const unsubscribeConnected = onConnected(() => {
+      console.log('WebSocket připojeno')
+    })
+
+    const unsubscribeDisconnected = onDisconnected(() => {
+      console.log('WebSocket odpojeno')
+    })
+
+    const unsubscribeError = onError((error) => {
+      console.error('WebSocket chyba:', error)
+    })
+
+    return () => {
+      unsubscribeMessage()
+      unsubscribeConnected()
+      unsubscribeDisconnected()
+      unsubscribeError()
+    }
+  }, [onMessage, onConnected, onDisconnected, onError, selectedChat])
 
   const loadMessages = async (chatId: string) => {
     setIsLoading(true)
@@ -53,8 +84,8 @@ export function Chat() {
       <div className="flex-1 flex flex-col">
         {selectedChat ? (
           <>
-            <ChatWindow messages={messages} isLoading={isLoading} />
-            <MessageInput onSendMessage={handleSendMessage} />
+            <ChatWindow messages={messages} isLoading={isLoading} chatId={selectedChat} />
+            <MessageInput onSendMessage={handleSendMessage} chatId={selectedChat} />
           </>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">

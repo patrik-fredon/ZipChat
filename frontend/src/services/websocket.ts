@@ -1,55 +1,95 @@
-import { Message } from '../types/message';
+import { EventEmitter } from 'events';
 
-class WebSocketService {
-	private socket: WebSocket | null = null;
-	private messageHandlers: ((message: Message) => void)[] = [];
+export interface WebSocketMessage {
+	type: string;
+	payload: any;
+}
 
-	connect(userId: string): void {
-		if (this.socket) {
-			this.disconnect();
+export class WebSocketService {
+	private static instance: WebSocketService;
+	private ws: WebSocket | null = null;
+	private eventEmitter: EventEmitter;
+	private reconnectAttempts = 0;
+	private maxReconnectAttempts = 5;
+	private reconnectTimeout = 1000;
+
+	private constructor() {
+		this.eventEmitter = new EventEmitter();
+	}
+
+	public static getInstance(): WebSocketService {
+		if (!WebSocketService.instance) {
+			WebSocketService.instance = new WebSocketService();
+		}
+		return WebSocketService.instance;
+	}
+
+	public connect(url: string): void {
+		if (this.ws) {
+			this.ws.close();
 		}
 
-		const wsUrl = `${process.env.REACT_APP_WS_URL}/messages?userId=${userId}`;
-		this.socket = new WebSocket(wsUrl);
+		this.ws = new WebSocket(url);
 
-		this.socket.onopen = () => {
-			console.log('WebSocket connected');
+		this.ws.onopen = () => {
+			console.log('WebSocket připojeno');
+			this.reconnectAttempts = 0;
+			this.eventEmitter.emit('connected');
 		};
 
-		this.socket.onmessage = (event) => {
+		this.ws.onmessage = (event) => {
 			try {
-				const message = JSON.parse(event.data) as Message;
-				this.messageHandlers.forEach((handler) => handler(message));
+				const message: WebSocketMessage = JSON.parse(event.data);
+				this.eventEmitter.emit('message', message);
 			} catch (error) {
-				console.error('Error parsing WebSocket message:', error);
+				console.error('Chyba při zpracování zprávy:', error);
 			}
 		};
 
-		this.socket.onerror = (error) => {
-			console.error('WebSocket error:', error);
+		this.ws.onclose = () => {
+			console.log('WebSocket odpojeno');
+			this.eventEmitter.emit('disconnected');
+			this.handleReconnect(url);
 		};
 
-		this.socket.onclose = () => {
-			console.log('WebSocket disconnected');
-			// Attempt to reconnect after 5 seconds
-			setTimeout(() => this.connect(userId), 5000);
+		this.ws.onerror = (error) => {
+			console.error('WebSocket chyba:', error);
+			this.eventEmitter.emit('error', error);
 		};
 	}
 
-	disconnect(): void {
-		if (this.socket) {
-			this.socket.close();
-			this.socket = null;
+	private handleReconnect(url: string): void {
+		if (this.reconnectAttempts < this.maxReconnectAttempts) {
+			this.reconnectAttempts++;
+			console.log(`Pokus o opětovné připojení (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+			setTimeout(() => this.connect(url), this.reconnectTimeout * this.reconnectAttempts);
+		} else {
+			console.error('Maximální počet pokusů o opětovné připojení dosažen');
+			this.eventEmitter.emit('reconnectFailed');
 		}
 	}
 
-	onMessage(handler: (message: Message) => void): void {
-		this.messageHandlers.push(handler);
+	public send(message: WebSocketMessage): void {
+		if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+			this.ws.send(JSON.stringify(message));
+		} else {
+			console.error('WebSocket není připojeno');
+			this.eventEmitter.emit('error', new Error('WebSocket není připojeno'));
+		}
 	}
 
-	removeMessageHandler(handler: (message: Message) => void): void {
-		this.messageHandlers = this.messageHandlers.filter((h) => h !== handler);
+	public on(event: string, listener: (...args: any[]) => void): void {
+		this.eventEmitter.on(event, listener);
+	}
+
+	public off(event: string, listener: (...args: any[]) => void): void {
+		this.eventEmitter.off(event, listener);
+	}
+
+	public disconnect(): void {
+		if (this.ws) {
+			this.ws.close();
+			this.ws = null;
+		}
 	}
 }
-
-export const websocketService = new WebSocketService();

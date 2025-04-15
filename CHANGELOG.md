@@ -999,6 +999,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Testy pro změnu hesla
 - Testy pro reset hesla
 - Testy pro sledování metrik v reálném čase
+- WebSocket podpora pro real-time komunikaci
+  - Implementace WebSocket služby
+  - Přidání WebSocket hooku
+  - Aktualizace ChatWindow komponenty
+  - Aktualizace MessageInput komponenty
+  - Aktualizace Chat komponenty
+  - Přidání WebSocket URL do .env.example
 
 ### Changed
 

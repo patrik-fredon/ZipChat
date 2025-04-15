@@ -1,111 +1,61 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from './useAuth';
+import { useCallback, useEffect } from 'react';
+import { WebSocketMessage, WebSocketService } from '../services/websocket';
 
-interface WebSocketMessage {
-	type: string;
-	data: any;
-}
-
-export const useWebSocket = (url: string = 'ws://localhost:3000') => {
-	const { token } = useAuth();
-	const [socket, setSocket] = useState<WebSocket | null>(null);
-	const [isConnected, setIsConnected] = useState(false);
-	const [messages, setMessages] = useState<WebSocketMessage[]>([]);
-	const [error, setError] = useState<string | null>(null);
-	const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
-
-	const connect = useCallback(() => {
-		if (socket?.readyState === WebSocket.OPEN) {
-			return;
-		}
-
-		try {
-			const wsUrl = `${url}?token=${token}`;
-			const ws = new WebSocket(wsUrl);
-
-			ws.onopen = () => {
-				setIsConnected(true);
-				setError(null);
-				console.log('WebSocket připojení navázáno');
-			};
-
-			ws.onclose = () => {
-				setIsConnected(false);
-				console.log('WebSocket připojení ukončeno');
-				reconnect();
-			};
-
-			ws.onerror = (event) => {
-				setError('Chyba WebSocket připojení');
-				console.error('WebSocket chyba:', event);
-			};
-
-			ws.onmessage = (event) => {
-				try {
-					const message = JSON.parse(event.data);
-					setMessages(prev => [...prev, message]);
-				} catch (err) {
-					console.error('Chyba při zpracování WebSocket zprávy:', err);
-				}
-			};
-
-			setSocket(ws);
-
-			return () => {
-				ws.close();
-			};
-		} catch (err) {
-			setError('Chyba při vytváření WebSocket připojení');
-			console.error('Chyba při vytváření WebSocket:', err);
-			reconnect();
-		}
-	}, [token, url]);
-
-	const reconnect = () => {
-		if (reconnectTimeoutRef.current) {
-			clearTimeout(reconnectTimeoutRef.current);
-		}
-
-		reconnectTimeoutRef.current = setTimeout(() => {
-			console.log('Pokus o opětovné připojení...');
-			connect();
-		}, 5000);
-	};
-
-	const send = useCallback((message: WebSocketMessage) => {
-		if (socket && isConnected) {
-			socket.send(JSON.stringify(message));
-		} else {
-			setError('WebSocket není připojen');
-		}
-	}, [socket, isConnected]);
-
-	const subscribe = useCallback((type: string, callback: (data: any) => void) => {
-		if (socket && isConnected) {
-			const message = { type: 'subscribe', data: { type } };
-			socket.send(JSON.stringify(message));
-
-			const unsubscribe = () => {
-				if (socket && isConnected) {
-					const message = { type: 'unsubscribe', data: { type } };
-					socket.send(JSON.stringify(message));
-				}
-			};
-
-			return unsubscribe;
-		}
-	}, [socket, isConnected]);
+export const useWebSocket = (url: string) => {
+	const ws = WebSocketService.getInstance();
 
 	useEffect(() => {
-		const cleanup = connect();
-		return cleanup;
-	}, [connect]);
+		ws.connect(url);
+
+		return () => {
+			ws.disconnect();
+		};
+	}, [url, ws]);
+
+	const sendMessage = useCallback(
+		(message: WebSocketMessage) => {
+			ws.send(message);
+		},
+		[ws]
+	);
+
+	const onMessage = useCallback(
+		(callback: (message: WebSocketMessage) => void) => {
+			ws.on('message', callback);
+			return () => ws.off('message', callback);
+		},
+		[ws]
+	);
+
+	const onConnected = useCallback(
+		(callback: () => void) => {
+			ws.on('connected', callback);
+			return () => ws.off('connected', callback);
+		},
+		[ws]
+	);
+
+	const onDisconnected = useCallback(
+		(callback: () => void) => {
+			ws.on('disconnected', callback);
+			return () => ws.off('disconnected', callback);
+		},
+		[ws]
+	);
+
+	const onError = useCallback(
+		(callback: (error: Error) => void) => {
+			ws.on('error', callback);
+			return () => ws.off('error', callback);
+		},
+		[ws]
+	);
 
 	return {
-		isConnected,
-		error,
-		messages,
-		send,
-		subscribe,
+		sendMessage,
+		onMessage,
+		onConnected,
+		onDisconnected,
+		onError,
 	};
 };

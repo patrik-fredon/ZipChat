@@ -1,16 +1,27 @@
 import { useState } from 'react'
+import { useWebSocket } from '../hooks/useWebSocket'
 
 interface MessageInputProps {
   onSendMessage: (content: string) => void
   isDisabled?: boolean
+  chatId: string
 }
 
-export function MessageInput({ onSendMessage, isDisabled = false }: MessageInputProps) {
+export function MessageInput({ onSendMessage, isDisabled = false, chatId }: MessageInputProps) {
   const [message, setMessage] = useState('')
+  const { sendMessage } = useWebSocket(`${process.env.REACT_APP_WS_URL}/chat/${chatId}`)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (message.trim() && !isDisabled) {
+      sendMessage({
+        type: 'send_message',
+        payload: {
+          content: message.trim(),
+          chatId,
+          timestamp: new Date().toISOString(),
+        },
+      })
       onSendMessage(message.trim())
       setMessage('')
     }
