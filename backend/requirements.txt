@@ -1,10 +1,12 @@
 flask==2.3.3
-flask-socketio==5.3.6
 flask-cors==4.0.0
+flask-socketio==5.3.6
 cryptography==41.0.3
 python-dotenv==1.0.0
 gunicorn==21.2.0
-eventlet==0.33.3
 prometheus-client==0.17.1
 flask-limiter==3.5.0
-flask-talisman==1.1.0 
+flask-talisman==1.1.0
+pytest==8.3.5
+pytest-asyncio==0.23.5
+eventlet==0.33.3 
