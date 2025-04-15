@@ -1,9 +1,11 @@
+import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 export function Navbar() {
   const { isAuthenticated, logout } = useAuth()
   const location = useLocation()
+  const { t } = useTranslation()
 
   return (
     <nav className="bg-white shadow-md">
@@ -21,7 +23,7 @@ export function Navbar() {
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   }`}
               >
-                Home
+                {t('nav.home')}
               </Link>
               {isAuthenticated && (
                 <>
@@ -32,7 +34,7 @@ export function Navbar() {
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                       }`}
                   >
-                    Chat
+                    {t('nav.chat')}
                   </Link>
                   <Link
                     to="/profile"
@@ -41,7 +43,7 @@ export function Navbar() {
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                       }`}
                   >
-                    Profile
+                    {t('nav.profile')}
                   </Link>
                 </>
               )}
@@ -53,14 +55,14 @@ export function Navbar() {
                 onClick={logout}
                 className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Logout
+                {t('auth.logout')}
               </button>
             ) : (
               <Link
                 to="/login"
                 className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Login
+                {t('auth.login')}
               </Link>
             )}
           </div>

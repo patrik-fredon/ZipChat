@@ -309,7 +309,7 @@ For support, please:
 
 ## 📈 Project Status
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/yourusername/zipchat/ci.yml?branch=main)](https://github.com/yourusername/zipchat/actions)
-[![Code Coverage](https://img.shields.io/codecov/c/github/yourusername/zipchat)](https://codecov.io/gh/yourusername/zipchat)
-[![License](https://img.shields.io/github/license/yourusername/zipchat)](https://github.com/yourusername/zipchat/blob/main/LICENSE)
-[![Version](https://img.shields.io/github/v/release/yourusername/zipchat)](https://github.com/yourusername/zipchat/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/patrik-fredon/zipchat/ci.yml?branch=main)](https://github.com/yourusername/zipchat/actions)
+[![Code Coverage](https://img.shields.io/codecov/c/github/patrik-fredon/zipchat)](https://codecov.io/gh/yourusername/zipchat)
+[![License](https://img.shields.io/github/license/patrik-fredon/zipchat)](https://github.com/yourusername/zipchat/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/patrik-fredon/zipchat)](https://github.com/yourusername/zipchat/releases)

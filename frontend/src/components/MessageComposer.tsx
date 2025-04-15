@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IMessage } from '../types/message';
 import { EmojiPicker } from './EmojiPicker';
 import { FilePreview } from './FilePreview';
@@ -18,6 +19,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
   isTyping,
   onTyping,
 }) => {
+  const { t } = useTranslation();
   const [content, setContent] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -55,7 +57,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       setExpiration('');
       setShowEmojiPicker(false);
     } catch (err) {
-      setError('Nepodařilo se odeslat zprávu');
+      setError(t('errors.sendMessageFailed'));
     } finally {
       setIsSending(false);
     }
@@ -101,7 +103,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             ref={inputRef}
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Napište zprávu..."
+            placeholder={t('chat.typeMessage')}
             className="input min-h-[80px] max-h-[200px] resize-y"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -117,7 +119,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
             className="btn btn-outlined"
-            aria-label="Vložit emoji"
+            aria-label={t('chat.emoji')}
           >
             😊
           </button>
@@ -128,7 +130,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             onChange={handleFileSelect}
             multiple
             className="hidden"
-            aria-label="Přidat přílohu"
+            aria-label={t('chat.attachments')}
           />
           <label
             htmlFor="file-upload"
@@ -142,7 +144,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             disabled={isSending || (!content.trim() && files.length === 0)}
             className="btn btn-primary"
           >
-            {isSending ? 'Odesílám...' : 'Odeslat'}
+            {isSending ? t('chat.sending') : t('chat.send')}
           </button>
         </div>
       </div>
@@ -155,7 +157,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
             onChange={(e) => setExpiration(e.target.value)}
             min={new Date().toISOString().slice(0, 16)}
             className="input"
-            placeholder="Platnost zprávy (volitelné)"
+            placeholder={t('chat.messageExpiration')}
           />
         </div>
       </div>
@@ -178,7 +180,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = ({
       )}
 
       {isTyping && (
-        <div className="text-sm text-gray-500">Píše...</div>
+        <div className="text-sm text-gray-500">{t('chat.typing')}</div>
       )}
     </form>
   );

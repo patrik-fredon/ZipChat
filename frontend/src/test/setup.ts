@@ -2,12 +2,12 @@ import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
 
-// Automatické čištění po každém testu
+// Automatic cleanup after each test
 afterEach(() => {
 	cleanup();
 });
 
-// Mock pro WebSocket
+// Mock for WebSocket
 class MockWebSocket {
 	onopen: (() => void) | null = null;
 	onmessage: ((event: { data: string }) => void) | null = null;
@@ -22,10 +22,10 @@ class MockWebSocket {
 	}
 }
 
-// Globální mock pro WebSocket
+// Global mock for WebSocket
 global.WebSocket = MockWebSocket as any;
 
-// Mock pro localStorage
+// Mock for localStorage
 const localStorageMock = (() => {
 	let store: Record<string, string> = {};
 
@@ -47,15 +47,15 @@ Object.defineProperty(window, 'localStorage', {
 	value: localStorageMock
 });
 
-// Mock pro fetch
+// Mock for fetch
 global.fetch = vi.fn();
 
-// Mock pro requestAnimationFrame
+// Mock for requestAnimationFrame
 global.requestAnimationFrame = (callback) => {
 	return setTimeout(callback, 0);
 };
 
-// Mock pro cancelAnimationFrame
+// Mock for cancelAnimationFrame
 global.cancelAnimationFrame = (id) => {
 	clearTimeout(id);
 };

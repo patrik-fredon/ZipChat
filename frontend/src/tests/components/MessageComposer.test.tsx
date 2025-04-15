@@ -120,7 +120,7 @@ describe('MessageComposer', () => {
     const input = screen.getByPlaceholderText('Napište zprávu...');
     fireEvent.change(input, { target: { value: 'Draft message' } });
 
-    // Simulace odchodu z komponenty
+    // Simulate component unmount
     const { unmount } = render(
       <MessageComposer
         onSend={mockOnSend}
@@ -130,7 +130,7 @@ describe('MessageComposer', () => {
     );
     unmount();
 
-    // Znovu načtení komponenty
+    // Re-render component
     render(
       <MessageComposer
         onSend={mockOnSend}
