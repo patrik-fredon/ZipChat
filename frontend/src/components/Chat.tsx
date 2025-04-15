@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { WebSocketService } from '../services/websocket';
 import { Message } from '../types';
 import { ChatInput } from './ChatInput';
 import { ChatMessage } from './ChatMessage';
 
 export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const wsService = WebSocketService.getInstance();
+
+    wsService.connect({
+      url: 'ws://localhost:3000/chat',
+      onMessage: (message) => {
+        setMessages(prev => [...prev, message]);
+      },
+      onError: (error) => {
+        console.error('WebSocket chyba:', error);
+        setError('Chyba připojení k chatu');
+      },
+      onClose: () => {
+        setIsConnected(false);
+      }
+    });
+
+    return () => {
+      wsService.disconnect();
+    };
+  }, []);
 
   const handleSendMessage = async (encryptedMessage: {
     content: string;
@@ -23,9 +48,10 @@ export const Chat: React.FC = () => {
 
     setMessages(prev => [...prev, newMessage]);
 
-    // TODO: Implement API call to send message
-    // After successful send, update message status
-    setTimeout(() => {
+    try {
+      const wsService = WebSocketService.getInstance();
+      wsService.sendMessage(newMessage);
+
       setMessages(prev =>
         prev.map(msg =>
           msg.id === newMessage.id
@@ -33,11 +59,24 @@ export const Chat: React.FC = () => {
             : msg
         )
       );
-    }, 1000);
+    } catch (error) {
+      console.error('Chyba při odesílání zprávy:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === newMessage.id
+            ? { ...msg, status: 'error' }
+            : msg
+        )
+      );
+    }
   };
 
   return (
     <div className="chat">
+      {error && <div className="error-message">{error}</div>}
+      <div className="connection-status">
+        Stav: {isConnected ? 'Připojeno' : 'Odpojeno'}
+      </div>
       <div className="messages">
         {messages.map(message => (
           <ChatMessage
