@@ -1427,9 +1427,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced draft security
   - Better typing indicator security
 - Přidána validace vstupů v testech
-- Vylepšena bezpečnost testovacích dat
+- Vylepšení bezpečnosti testovacích dat
 - Přidána izolace testovacích případů
-- Vylepšena bezpečnost testovacích souborů
+- Vylepšení bezpečnosti testovacích souborů
 - Enhanced user security:
   - Added password validation
   - Implemented secure password storage
@@ -1686,3 +1686,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Oprava závislostí
 - Oprava skriptů pro vývoj a build
 - Oprava importů a cest v souborech
+
+## [0.1.0] - 2024-04-15
+
+### Added
+
+- Implementace WebSocket serveru pro real-time komunikaci
+- Přidání modelu Message s podporou pro šifrování
+- Implementace utility funkcí pro šifrování a dešifrování zpráv
+- Přidání podpory pro autentizaci WebSocket spojení
+- Implementace ping/pong mechanismu pro udržení spojení
+
+### Changed
+
+- Aktualizace struktury projektu pro podporu WebSocket komunikace
+- Vylepšení bezpečnosti komunikace pomocí šifrování
+
+### Security
+
+- Implementace end-to-end šifrování zpráv
+- Přidání autentizačního mechanismu pro WebSocket spojení
+- Bezpečné ukládání šifrovaných zpráv v databázi

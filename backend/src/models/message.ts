@@ -1,55 +1,72 @@
-import { z } from 'zod';
-import { pgPool } from '../lib/database';
+import { Document, Schema, model } from 'mongoose';
+import { decrypt, encrypt } from '../utils/crypto';
 
-export const MessageSchema = z.object({
-	id: z.string().uuid(),
-	sender_id: z.string().uuid(),
-	recipient_id: z.string().uuid(),
-	encrypted_content: z.string(),
-	iv: z.string(),
-	created_at: z.date(),
-	expires_at: z.date().nullable(),
-	is_read: z.boolean(),
-	is_deleted: z.boolean()
+export interface IMessage extends Document {
+	senderId: string;
+	recipientId: string;
+	content: string;
+	encryptedContent: string;
+	timestamp: Date;
+	isRead: boolean;
+}
+
+const messageSchema = new Schema<IMessage>({
+	senderId: {
+		type: String,
+		required: true,
+		index: true
+	},
+	recipientId: {
+		type: String,
+		required: true,
+		index: true
+	},
+	content: {
+		type: String,
+		required: true
+	},
+	encryptedContent: {
+		type: String,
+		required: true
+	},
+	timestamp: {
+		type: Date,
+		default: Date.now
+	},
+	isRead: {
+		type: Boolean,
+		default: false
+	}
 });
 
-export type Message = z.infer<typeof MessageSchema>;
-
-export class MessageModel {
-	static async create(message: Omit<Message, 'id' | 'created_at' | 'is_read' | 'is_deleted'>) {
-		const query = `
-      INSERT INTO messages (sender_id, recipient_id, encrypted_content, iv, expires_at)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *
-    `;
-		const values = [message.sender_id, message.recipient_id, message.encrypted_content, message.iv, message.expires_at];
-		const result = await pgPool.query(query, values);
-		return result.rows[0];
+// Middleware pro šifrování zprávy před uložením
+messageSchema.pre('save', async function(next) {
+	if (this.isModified('content')) {
+		this.encryptedContent = await encrypt(this.content);
 	}
+	next();
+});
 
-	static async findByRecipient(recipientId: string) {
-		const query = `
-      SELECT * FROM messages 
-      WHERE recipient_id = $1 
-      AND is_deleted = false
-      ORDER BY created_at DESC
-    `;
-		const result = await pgPool.query(query, [recipientId]);
-		return result.rows;
-	}
+// Metoda pro dešifrování zprávy
+messageSchema.methods.decryptContent = async function(): Promise<string> {
+	return await decrypt(this.encryptedContent);
+};
 
-	static async markAsRead(id: string) {
-		const query = 'UPDATE messages SET is_read = true WHERE id = $1';
-		await pgPool.query(query, [id]);
-	}
+// Statické metody pro práci se zprávami
+messageSchema.statics.findByUsers = function(senderId: string, recipientId: string) {
+	return this.find({
+		$or: [
+			{ senderId, recipientId },
+			{ senderId: recipientId, recipientId: senderId }
+		]
+	}).sort({ timestamp: 1 });
+};
 
-	static async softDelete(id: string) {
-		const query = 'UPDATE messages SET is_deleted = true WHERE id = $1';
-		await pgPool.query(query, [id]);
-	}
+messageSchema.statics.markAsRead = function(messageIds: string[]) {
+	return this.updateMany(
+		{ _id: { $in: messageIds } },
+		{ $set: { isRead: true } }
+	);
+};
 
-	static async cleanupExpired() {
-		const query = 'DELETE FROM messages WHERE expires_at < NOW() AND is_deleted = false';
-		await pgPool.query(query);
-	}
-}
+export const Message = model<IMessage>('Message', messageSchema);
