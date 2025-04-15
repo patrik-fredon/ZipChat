@@ -1,86 +1,102 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-interface WebSocketMessage {
-	type: string;
-	data: any;
+interface UseWebSocketOptions {
+	url: string;
+	reconnectAttempts?: number;
+	reconnectInterval?: number;
+	onOpen?: () => void;
+	onClose?: () => void;
+	onError?: (error: Event) => void;
 }
 
 interface UseWebSocketReturn {
+	sendMessage: (message: string) => void;
+	setTyping: (isTyping: boolean) => void;
 	isConnected: boolean;
-	sendMessage: (type: string, data: any) => void;
-	subscribe: (type: string, callback: (data: any) => void) => void;
-	unsubscribe: (type: string) => void;
+	error: Event | null;
 }
 
-export const useWebSocket = (url: string = 'ws://localhost:3001'): UseWebSocketReturn => {
+export const useWebSocket = ({ url, reconnectAttempts = 3, reconnectInterval = 3000, onOpen, onClose, onError }: UseWebSocketOptions): UseWebSocketReturn => {
+	const [ws, setWs] = useState<WebSocket | null>(null);
 	const [isConnected, setIsConnected] = useState(false);
-	const wsRef = useRef<WebSocket | null>(null);
-	const callbacksRef = useRef<Map<string, ((data: any) => void)[]>>(new Map());
+	const [error, setError] = useState<Event | null>(null);
+	const [retryCount, setRetryCount] = useState(0);
 
 	const connect = useCallback(() => {
-		if (wsRef.current?.readyState === WebSocket.OPEN) return;
-
-		const ws = new WebSocket(url);
-
-		ws.onopen = () => {
-			setIsConnected(true);
-			console.log('WebSocket connected');
-		};
-
-		ws.onclose = () => {
-			setIsConnected(false);
-			console.log('WebSocket disconnected');
-			// Reconnect after 5 seconds
-			setTimeout(connect, 5000);
-		};
-
-		ws.onerror = (error) => {
-			console.error('WebSocket error:', error);
-		};
-
-		ws.onmessage = (event) => {
-			try {
-				const message: WebSocketMessage = JSON.parse(event.data);
-				const callbacks = callbacksRef.current.get(message.type) || [];
-				callbacks.forEach(callback => callback(message.data));
-			} catch (error) {
-				console.error('Error parsing WebSocket message:', error);
-			}
-		};
-
-		wsRef.current = ws;
-	}, [url]);
+		try {
+			const websocket = new WebSocket(url);
+			setWs(websocket);
+		} catch (err) {
+			setError(err as Event);
+			onError?.(err as Event);
+		}
+	}, [url, onError]);
 
 	useEffect(() => {
 		connect();
+
 		return () => {
-			if (wsRef.current) {
-				wsRef.current.close();
+			if (ws) {
+				ws.close();
 			}
 		};
 	}, [connect]);
 
-	const sendMessage = useCallback((type: string, data: any) => {
-		if (wsRef.current?.readyState === WebSocket.OPEN) {
-			wsRef.current.send(JSON.stringify({ type, data }));
-		} else {
-			console.error('WebSocket is not connected');
-		}
-	}, []);
+	useEffect(() => {
+		if (!ws) return;
 
-	const subscribe = useCallback((type: string, callback: (data: any) => void) => {
-		const callbacks = callbacksRef.current.get(type) || [];
-		callbacksRef.current.set(type, [...callbacks, callback]);
-	}, []);
+		ws.onopen = () => {
+			setIsConnected(true);
+			setRetryCount(0);
+			onOpen?.();
+		};
 
-	const unsubscribe = useCallback((type: string) => {
-		callbacksRef.current.delete(type);
-	}, []);
+		ws.onclose = () => {
+			setIsConnected(false);
+			onClose?.();
+
+			if (retryCount < reconnectAttempts) {
+				setTimeout(() => {
+					setRetryCount((prev) => prev + 1);
+					connect();
+				}, reconnectInterval);
+			}
+		};
+
+		ws.onerror = (event: Event) => {
+			setError(event);
+			onError?.(event);
+		};
+
+		return () => {
+			ws.onopen = null;
+			ws.onclose = null;
+			ws.onerror = null;
+		};
+	}, [ws, onOpen, onClose, onError, retryCount, reconnectAttempts, reconnectInterval, connect]);
+
+	const sendMessage = useCallback(
+		(message: string) => {
+			if (ws?.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify({ type: 'message', content: message }));
+			}
+		},
+		[ws]
+	);
+
+	const setTyping = useCallback(
+		(isTyping: boolean) => {
+			if (ws?.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify({ type: 'typing', isTyping }));
+			}
+		},
+		[ws]
+	);
 
 	return {
-		isConnected,
 		sendMessage,
-		subscribe,
-		unsubscribe,
+		setTyping,
+		isConnected,
+		error
 	};
 };
