@@ -54,17 +54,18 @@ const SelectWrapper = styled.div<{ fullWidth?: boolean }>`
 const StyledSelect = styled.select<{ error?: boolean }>`
   padding: ${spacing.sm} ${spacing.md};
   border: 1px solid ${({ error }) => error ? colors.error.main : colors.border.main};
-  border-radius: ${borderRadius.medium};
+  border-radius: ${borderRadius.md};
   background: ${colors.background.main};
   color: ${colors.text.primary};
   font-size: 0.875rem;
+  transition: all ${transitions.fast};
+  width: 100%;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right ${spacing.md};
+  background-position: right ${spacing.md} center;
   background-size: 1em;
   padding-right: ${spacing.xl};
-  transition: all ${transitions.fast};
 
   &:focus {
     outline: none;
@@ -81,6 +82,7 @@ const StyledSelect = styled.select<{ error?: boolean }>`
 const Label = styled.label`
   font-size: 0.875rem;
   color: ${colors.text.primary};
+  font-weight: 500;
 `;
 
 const ErrorMessage = styled.span`

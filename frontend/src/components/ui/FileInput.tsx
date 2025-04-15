@@ -2,37 +2,38 @@ import React from 'react';
 import styled from 'styled-components';
 import { borderRadius, colors, spacing, transitions } from '../../styles/design-system';
 
-interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> {
+interface FileInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
-  onChange?: (value: string) => void;
+  onChange?: (files: FileList | null) => void;
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
   ({ label, error, fullWidth, onChange, ...props }, ref) => {
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      onChange?.(e.target.value);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e.target.files);
     };
 
     return (
-      <TextareaWrapper fullWidth={fullWidth}>
+      <FileInputWrapper fullWidth={fullWidth}>
         {label && <Label htmlFor={props.id}>{label}</Label>}
-        <StyledTextarea
+        <StyledFileInput
           ref={ref}
+          type="file"
           error={!!error}
           onChange={handleChange}
           {...props}
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
-      </TextareaWrapper>
+      </FileInputWrapper>
     );
   }
 );
 
-Textarea.displayName = 'Textarea';
+FileInput.displayName = 'FileInput';
 
-const TextareaWrapper = styled.div<{ fullWidth?: boolean }>`
+const FileInputWrapper = styled.div<{ fullWidth?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: ${spacing.xs};
@@ -40,7 +41,7 @@ const TextareaWrapper = styled.div<{ fullWidth?: boolean }>`
   position: relative;
 `;
 
-const StyledTextarea = styled.textarea<{ error?: boolean }>`
+const StyledFileInput = styled.input<{ error?: boolean }>`
   padding: ${spacing.sm} ${spacing.md};
   border: 1px solid ${({ error }) => error ? colors.error.main : colors.border.main};
   border-radius: ${borderRadius.md};
@@ -49,8 +50,7 @@ const StyledTextarea = styled.textarea<{ error?: boolean }>`
   font-size: 0.875rem;
   transition: all ${transitions.fast};
   outline: none;
-  min-height: 100px;
-  resize: vertical;
+  width: 100%;
 
   &:focus {
     border-color: ${colors.primary.main};
@@ -62,8 +62,25 @@ const StyledTextarea = styled.textarea<{ error?: boolean }>`
     cursor: not-allowed;
   }
 
-  &::placeholder {
-    color: ${colors.text.secondary};
+  &::file-selector-button {
+    padding: ${spacing.xs} ${spacing.sm};
+    border: none;
+    border-radius: ${borderRadius.sm};
+    background: ${colors.primary.main};
+    color: ${colors.text.light};
+    font-size: 0.875rem;
+    cursor: pointer;
+    margin-right: ${spacing.sm};
+    transition: all ${transitions.fast};
+
+    &:hover {
+      background: ${colors.primary.dark};
+    }
+
+    &:disabled {
+      background: ${colors.background.light};
+      cursor: not-allowed;
+    }
   }
 `;
 
@@ -81,4 +98,4 @@ const ErrorMessage = styled.span`
   left: 0;
 `;
 
-export default Textarea; 
+export default FileInput; 

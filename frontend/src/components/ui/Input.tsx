@@ -20,8 +20,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && <Label htmlFor={props.id}>{label}</Label>}
         <StyledInput
           ref={ref}
-          onChange={handleChange}
           error={!!error}
+          onChange={handleChange}
           {...props}
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
@@ -37,19 +37,20 @@ const InputWrapper = styled.div<{ fullWidth?: boolean }>`
   flex-direction: column;
   gap: ${spacing.xs};
   width: ${({ fullWidth }) => fullWidth ? '100%' : 'auto'};
+  position: relative;
 `;
 
 const StyledInput = styled.input<{ error?: boolean }>`
   padding: ${spacing.sm} ${spacing.md};
   border: 1px solid ${({ error }) => error ? colors.error.main : colors.border.main};
-  border-radius: ${borderRadius.medium};
+  border-radius: ${borderRadius.md};
   background: ${colors.background.main};
   color: ${colors.text.primary};
   font-size: 0.875rem;
   transition: all ${transitions.fast};
+  outline: none;
 
   &:focus {
-    outline: none;
     border-color: ${colors.primary.main};
     box-shadow: 0 0 0 2px ${colors.primary.light};
   }
@@ -67,11 +68,15 @@ const StyledInput = styled.input<{ error?: boolean }>`
 const Label = styled.label`
   font-size: 0.875rem;
   color: ${colors.text.primary};
+  font-weight: 500;
 `;
 
 const ErrorMessage = styled.span`
   font-size: 0.75rem;
   color: ${colors.error.main};
+  position: absolute;
+  bottom: -${spacing.xs};
+  left: 0;
 `;
 
 export default Input; 

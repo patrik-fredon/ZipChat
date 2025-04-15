@@ -1,41 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
-import { borderRadius, colors, spacing, transitions } from '../../styles/design-system';
+import { colors, spacing, transitions } from '../../styles/design-system';
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;
   error?: string;
   fullWidth?: boolean;
   onChange?: (checked: boolean) => void;
 }
 
-const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
   ({ label, error, fullWidth, onChange, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(e.target.checked);
     };
 
     return (
-      <CheckboxWrapper fullWidth={fullWidth}>
-        <HiddenCheckbox
+      <RadioWrapper fullWidth={fullWidth}>
+        <HiddenRadio
           ref={ref}
-          type="checkbox"
+          type="radio"
           onChange={handleChange}
           {...props}
         />
-        <StyledCheckbox error={!!error}>
-          <Checkmark />
-        </StyledCheckbox>
+        <StyledRadio error={!!error}>
+          <RadioDot />
+        </StyledRadio>
         {label && <Label htmlFor={props.id}>{label}</Label>}
         {error && <ErrorMessage>{error}</ErrorMessage>}
-      </CheckboxWrapper>
+      </RadioWrapper>
     );
   }
 );
 
-Checkbox.displayName = 'Checkbox';
+Radio.displayName = 'Radio';
 
-const CheckboxWrapper = styled.div<{ fullWidth?: boolean }>`
+const RadioWrapper = styled.div<{ fullWidth?: boolean }>`
   display: flex;
   align-items: center;
   gap: ${spacing.sm};
@@ -43,7 +43,7 @@ const CheckboxWrapper = styled.div<{ fullWidth?: boolean }>`
   position: relative;
 `;
 
-const HiddenCheckbox = styled.input`
+const HiddenRadio = styled.input`
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -51,43 +51,42 @@ const HiddenCheckbox = styled.input`
   width: 0;
 `;
 
-const StyledCheckbox = styled.div<{ error?: boolean }>`
+const StyledRadio = styled.div<{ error?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 1.25rem;
   height: 1.25rem;
   border: 1px solid ${({ error }) => error ? colors.error.main : colors.border.main};
-  border-radius: ${borderRadius.sm};
+  border-radius: 50%;
   background: ${colors.background.main};
   transition: all ${transitions.fast};
   cursor: pointer;
 
-  ${HiddenCheckbox}:checked + & {
-    background: ${colors.primary.main};
+  ${HiddenRadio}:checked + & {
     border-color: ${colors.primary.main};
   }
 
-  ${HiddenCheckbox}:focus + & {
+  ${HiddenRadio}:focus + & {
     outline: none;
     box-shadow: 0 0 0 2px ${colors.primary.light};
   }
 
-  ${HiddenCheckbox}:disabled + & {
+  ${HiddenRadio}:disabled + & {
     background: ${colors.background.light};
     cursor: not-allowed;
   }
 `;
 
-const Checkmark = styled.div`
-  width: 0.5rem;
-  height: 0.5rem;
-  background: ${colors.background.main};
-  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+const RadioDot = styled.div`
+  width: 0.75rem;
+  height: 0.75rem;
+  background: ${colors.primary.main};
+  border-radius: 50%;
   transform: scale(0);
   transition: transform ${transitions.fast};
 
-  ${HiddenCheckbox}:checked + ${StyledCheckbox} & {
+  ${HiddenRadio}:checked + ${StyledRadio} & {
     transform: scale(1);
   }
 `;
@@ -107,4 +106,4 @@ const ErrorMessage = styled.span`
   left: 0;
 `;
 
-export default Checkbox; 
+export default Radio; 
